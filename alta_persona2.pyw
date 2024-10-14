@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage,messagebox
 from tkinter.ttk import Combobox  
 from conexionbd import insertar_persona
-
+import mysql.connector
 
 # Ventana
 class AltaPersona(tk.Tk):
@@ -78,16 +78,25 @@ class AltaPersona(tk.Tk):
         btn_guardar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
         btn_guardar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
     
+        self.conn = mysql.connector.connect(
+            user='root',
+            password='123',
+            host='localhost',
+            database='base_peluqueria'
+            )
+        self.cursor = self.conn.cursor()
+    
     def guardar_datos(self):
         nombre = self.entry_nombre.get()
         apellido = self.entry_apellido.get()
         dni = self.entry_dni.get()
         contacto = self.entry_contacto.get()
         tipo = self.tipo_combobox.get()
-        activo = 1 if self.activo_var.get() == "1" else 0  
-        
-         
-        
+        activo = 1 if self.activo_var.get() == "1" else 0 
+        consulta = "INSERT INTO persona (nombre, apellido, dni, contacto, tipo, activo) VALUES (%s, %s, %s, %s, %s, %s)"
+        self.cursor.execute(consulta, (nombre, apellido, dni, contacto, tipo, activo))
+        self.conn.commit()
+        print("Datos guardados")
         if nombre and apellido and dni and contacto and tipo:
             id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
             insertar_persona(nombre, apellido, dni, contacto,activo,tipo, id_tipo_p)
@@ -97,6 +106,11 @@ class AltaPersona(tk.Tk):
             messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
 
 
+
+    def __del__(self):
+        self.conn.close() 
+        
+         
     def limpiar_campos(self):
         self.entry_nombre.delete(0, tk.END)
         self.entry_apellido.delete(0, tk.END)
