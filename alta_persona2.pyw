@@ -73,10 +73,10 @@ class AltaPersona(tk.Tk):
         self.radio_si.grid(row=6, column=2, sticky="w", padx=400)
         self.radio_no.grid(row=6, column=2,  padx=10)
 
-        btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="light grey", font=('Calibri', 15))
-        btn_guardar.grid(row=9, column=2, columnspan=2, padx=400,pady=20,sticky="w")
-        btn_guardar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
-        btn_guardar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
+        self.btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="light grey", font=('Calibri', 15))
+        self.btn_guardar.grid(row=9, column=2, columnspan=2, padx=400,pady=20,sticky="w")
+        self.btn_Limpiar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
+        self.btn_Limpiar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
     
         self.conn = mysql.connector.connect(
             user='root',
@@ -87,24 +87,26 @@ class AltaPersona(tk.Tk):
         self.cursor = self.conn.cursor()
     
     def guardar_datos(self):
+        print("Guardar datos llamado")
+        # Desactivar el botón para evitar múltiples clics
+        self.btn_guardar.config(state=tk.DISABLED)
+    
         nombre = self.entry_nombre.get()
         apellido = self.entry_apellido.get()
         dni = self.entry_dni.get()
         contacto = self.entry_contacto.get()
         tipo = self.tipo_combobox.get()
         activo = 1 if self.activo_var.get() == "1" else 0 
-        consulta = "INSERT INTO persona (nombre, apellido, dni, contacto, tipo, activo) VALUES (%s, %s, %s, %s, %s, %s)"
-        self.cursor.execute(consulta, (nombre, apellido, dni, contacto, tipo, activo))
-        self.conn.commit()
-        print("Datos guardados")
-        if nombre and apellido and dni and contacto and tipo:
+
+        if nombre and apellido and dni and contacto and tipo:        
             id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
-            insertar_persona(nombre, apellido, dni, contacto,activo,tipo, id_tipo_p)
+            insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p)
             messagebox.showinfo("Éxito", "Registro guardado en la base de datos.")
-    
         else:
             messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
-
+    
+        # Reactivar el botón después de un breve tiempo (opcional)
+        self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
 
 
     def __del__(self):
