@@ -2,20 +2,19 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import PhotoImage  
 from Menu import Menu
+from conexionbd import conectar_db
 
 class Sesion(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.usuario = "Silvana"
-        self.contraseña = 1234
         self.geometry("500x300")  
         self.resizable(False, False)
         self.configure(bg="#40E0D0")  
         self.title("Inicio de Sesión")
 
         
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces de la peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
@@ -36,16 +35,29 @@ class Sesion(tk.Tk):
         self.boton = tk.Button(self, text="Ingresar", command=self.verificar_sesion, font=("Calibri", 12))
         self.boton.grid(row=2, column=1, padx=10, pady=1)
 
+    
+
     def verificar_sesion(self):
+        mydb = conectar_db()
+        if mydb is None:
+            messagebox.showerror("Error", "No se pudo conectar a la base de datos")
+            return
+
+        cursor = mydb.cursor()
         usuario_ingresado = self.mostrador_usuario.get()
         contraseña_ingresada = self.mostrador_contraseña.get()
 
-        if usuario_ingresado == self.usuario and int(contraseña_ingresada) == self.contraseña:
-            messagebox.showinfo("Éxito", "Inicio de sesión exitoso")  
+        query = "SELECT * FROM usuarios WHERE nombre_usuario = %s AND contraseña = %s"
+        cursor.execute(query, (usuario_ingresado, contraseña_ingresada))
+
+        if cursor.fetchone():
+            messagebox.showinfo("Éxito", "Inicio de sesión exitoso")
             self.abrir_menu_principal()
         else:
-            messagebox.showerror("Error", "Usuario o contraseña incorrectos")  
-    
+            messagebox.showerror("Error", "Usuario o contraseña incorrectos")
+
+        cursor.close()
+        mydb.close()
 
     def abrir_menu_principal(self):
         self.destroy()  # Cierra la ventana de inicio de sesión

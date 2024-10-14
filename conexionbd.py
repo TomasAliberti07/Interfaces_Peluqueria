@@ -5,13 +5,15 @@ def conectar_db():
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # PONER SU PROPIO USUARIO
-            password="",  # PONER SU PROPIA CLAVE
-            database="base_peluquerias"
+            password="123",  # PONER SU PROPIA CLAVE
+            database="base_peluqueria"
         )
         return mydb
     except mysql.connector.Error as err:
         print(f"Error de conexión: {err}")
         return None
+
+
 
 def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p):
     mydb = conectar_db()

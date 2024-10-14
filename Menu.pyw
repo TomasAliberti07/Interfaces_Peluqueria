@@ -11,7 +11,7 @@ class Menu(tk.Tk):
         self.title("Menu")
 
 
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces de la peluqueria/imagen4.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen4.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
