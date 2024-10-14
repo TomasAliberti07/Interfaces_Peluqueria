@@ -1,16 +1,20 @@
+import mysql.connector
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button 
 from tkinter import PhotoImage
+from conexionbd import conectar_bd
+
+
 
 # Ventana
-class AltaPersona(tk.Tk):
+class AltaProducto(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Alta de producto") 
         self.geometry("1110x410")
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces de la peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/ramye/Desktop/Facultad/Programación 2do año/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
@@ -29,15 +33,21 @@ class AltaPersona(tk.Tk):
         label_cantidad = tk.Label(frame_datos, text="Cantidad: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
         label_cantidad.grid(row=3, column=1, pady=10)
 
+        label_precio = tk.Label(frame_datos, text="Precio: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_precio.grid(row=4, column=1, pady=10)
+
         # Entradas
-        entry_nombre = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        entry_nombre.grid(row=1, column=2, ipadx=400)
+        self.entry_nombre = Entry(frame_datos, bg="white", font=('Calibri', 15))
+        self.entry_nombre.grid(row=1, column=2, ipadx=400)
 
-        entry_marca = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        entry_marca.grid(row=2, column=2, ipadx=400)
+        self.entry_marca = Entry(frame_datos, bg="white", font=('Calibri', 15))
+        self.entry_marca.grid(row=2, column=2, ipadx=400)
 
-        entry_cantidad = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        entry_cantidad.grid(row=3, column=2, ipadx=400)
+        self.entry_cantidad = Entry(frame_datos, bg="white", font=('Calibri', 15))
+        self.entry_cantidad.grid(row=3, column=2, ipadx=400)
+
+        self.entry_precio = Entry(frame_datos, bg="white", font=('Calibri', 15))
+        self.entry_precio.grid(row=4, column=2, ipadx=400)
 
 
         # Botón de Envío
@@ -45,9 +55,25 @@ class AltaPersona(tk.Tk):
         btn_guardar.grid(row=9, column=1, columnspan=2, pady=20)
 
     def guardar_datos(self):
-    
-        print("Datos guardados")  
+        cnx = conectar_bd()
+        cursor = cnx.cursor()
+
+        nombre = self.entry_nombre.get()
+        marca = self.entry_marca.get()
+        cantidad = self.entry_cantidad.get()
+        precio = self.entry_precio.get()
+
+    # Suponiendo que estás intentando insertar datos en la tabla producto
+        query = "INSERT INTO producto (nombre, marca, cantidad, precio) VALUES (%s, %s, %s, %s)"
+        valores = (nombre, marca, cantidad, precio)
+
+        cursor.execute(query, valores)
+        cnx.commit()
+
+        print("Datos guardados")
+        cursor.close()
+        cnx.close()
 
 if __name__ == "__main__":
-    app = AltaPersona()
+    app = AltaProducto()
     app.mainloop()
