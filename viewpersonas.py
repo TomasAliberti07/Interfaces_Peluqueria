@@ -56,7 +56,7 @@ class ViewPersonas(tk.Frame):
         self.load_personas()
 
     def load_personas(self):
-        self.mycursor.execute("SELECT * FROM persona")
+        self.mycursor.execute("SELECT * FROM persona ")#filtrar solo activos.
         personas = self.mycursor.fetchall()
         for persona in personas:
             self.personas_treeview.insert("", "end", values=(persona[1], persona[2], persona[3], persona[4], persona[5], persona[6], persona[7], persona[8]))
