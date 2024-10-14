@@ -10,6 +10,7 @@ id_producto int not null auto_increment,
 nombre varchar(500) not null,
 marcar varchar(500) not null,
 cantidad float not null,
+precio float not null,
 primary key(id_producto)
 );
 create table if not exists turno(

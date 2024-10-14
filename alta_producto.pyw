@@ -2,7 +2,7 @@ import mysql.connector
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button 
 from tkinter import PhotoImage
-from conexionbd import conectar_bd
+from conexionbd import conectar_db
 
 
 
@@ -55,7 +55,7 @@ class AltaProducto(tk.Tk):
         btn_guardar.grid(row=9, column=1, columnspan=2, pady=20)
 
     def guardar_datos(self):
-        cnx = conectar_bd()
+        cnx = conectar_db()
         cursor = cnx.cursor()
 
         nombre = self.entry_nombre.get()
@@ -64,7 +64,7 @@ class AltaProducto(tk.Tk):
         precio = self.entry_precio.get()
 
     # Suponiendo que estás intentando insertar datos en la tabla producto
-        query = "INSERT INTO producto (nombre, marca, cantidad, precio) VALUES (%s, %s, %s, %s)"
+        query = "INSERT INTO producto (nombre, marcar, cantidad, precio) VALUES (%s, %s, %s, %s)"
         valores = (nombre, marca, cantidad, precio)
 
         cursor.execute(query, valores)

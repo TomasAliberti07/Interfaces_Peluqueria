@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage
-from tkinter.ttk import Combobox  
+from tkinter.ttk import Combobox 
+from conexionbd import conectar_bd 
 
 # Ventana
 class AltaPersona(tk.Tk):
