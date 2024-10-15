@@ -5,14 +5,14 @@ from conexionbd import insertar_persona
 import mysql.connector
 
 # Ventana
-class AltaPersona(tk.Tk):
-    def __init__(self):
-        super().__init__()
+class AltaPersona(tk.Toplevel):
+    def __init__(self,master=None):
+        super().__init__(master)
         self.title("Alta de persona") 
-        self.geometry("1110x610")
+        self.geometry("1180x610")
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -39,11 +39,14 @@ class AltaPersona(tk.Tk):
         label_contacto = tk.Label(frame_datos, text="Contacto: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
         label_contacto.grid(row=4, column=1, pady=10)
 
+        label_correo = tk.Label(frame_datos, text="Correo: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_correo.grid(row=5, column=1, pady=10)
+        
         label_tipo = tk.Label(frame_datos, text="Tipo: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
-        label_tipo.grid(row=5, column=1, pady=10)
+        label_tipo.grid(row=6, column=1, pady=10)
 
         label_activo = tk.Label(frame_datos, text="Activo: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
-        label_activo.grid(row=6, column=1, pady=10)
+        label_activo.grid(row=7, column=1, pady=10)
 
 
         # Entradas
@@ -58,20 +61,23 @@ class AltaPersona(tk.Tk):
 
         self.entry_contacto = Entry(frame_datos, bg="white", font=('Calibri', 15))
         self.entry_contacto.grid(row=4, column=2, ipadx=400)
-       
+
+        self.entry_correo = Entry(frame_datos, bg="white", font=('Calibri', 15))
+        self.entry_correo.grid(row=5, column=2, ipadx=400)
+
         
         # Combobox para seleccionar tipo de persona
         tipo_var = StringVar(self)
         self.tipo_combobox = Combobox(frame_datos, textvariable=tipo_var, state="readonly", font=('Calibri', 15))
         self.tipo_combobox['values'] = ("Cliente", "Empleado")  # Opciones del combobox
         self.tipo_combobox.set("")  
-        self.tipo_combobox.grid(row=5, column=2, ipadx=390)
+        self.tipo_combobox.grid(row=6, column=2, ipadx=390)
 
         self.activo_var = StringVar(value="1")
         self.radio_si = tk.Radiobutton(frame_datos, text="Sí", variable=self.activo_var, value="1", bg="#48D1CC", font=('Calibri', 15))
         self.radio_no = tk.Radiobutton(frame_datos, text="No", variable=self.activo_var, value="0", bg="#48D1CC", font=('Calibri', 15))
-        self.radio_si.grid(row=6, column=2, sticky="w", padx=400)
-        self.radio_no.grid(row=6, column=2,  padx=10)
+        self.radio_si.grid(row=7, column=2, sticky="w", padx=400)
+        self.radio_no.grid(row=7, column=2,  padx=10)
 
         self.btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="light grey", font=('Calibri', 15))
         self.btn_guardar.grid(row=9, column=2, columnspan=2, padx=400,pady=20,sticky="w")
@@ -80,9 +86,9 @@ class AltaPersona(tk.Tk):
     
         self.conn = mysql.connector.connect(
             user='root',
-            password='123',
+            password='',
             host='localhost',
-            database='base_peluqueria'
+            database='base_peluquerias'
             )
         self.cursor = self.conn.cursor()
     
