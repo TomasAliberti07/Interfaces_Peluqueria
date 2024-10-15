@@ -48,10 +48,7 @@ class ViewPersonas(tk.Frame):
                         foreground="#000000",
                         rowheight=25,
                         fieldbackground="#ffffff")
-        style.map("Treeview",
-                  background=[("selected", "#40E0D0")],  # Color de fondo seleccionado
-                  foreground=[("selected", "#ffffff")])  # Color de texto seleccionado
-
+        
         # Treeview de personas
         self.personas_treeview = ttk.Treeview(self, columns=("dni", "nombre", "apellido", "contacto", "correo", "tipo", "activo", "id_tipo_p", "id_turno"), show="headings")
         self.personas_treeview.grid(row=1, column=0, sticky="nsew", padx=70, pady=10)
