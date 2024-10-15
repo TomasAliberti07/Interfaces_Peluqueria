@@ -103,6 +103,7 @@ class ViewPersonas(tk.Frame):
         self.mydb.close()
         
     def abrir_altap(self):
+        #Se llama al modulo dentro de la funcion para evitar problema de importación circular
         from alta_persona2 import AltaPersona
         alta = AltaPersona(self)  # Crea una nueva ventana de alta persona
         alta.transient(self)  # Hacer que sea una ventana secundaria
