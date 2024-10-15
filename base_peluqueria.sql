@@ -39,3 +39,7 @@ primary key(id_persona),
 foreign key (id_tipo_p)references tipo_p(id_tipo_p),
 foreign key (id_turno) references turno(id_turno)
 );
+
+#añadidos
+ALTER TABLE `base_peluqueria`.`producto` 
+ADD COLUMN `precio` FLOAT NOT NULL AFTER `cantidad`;
