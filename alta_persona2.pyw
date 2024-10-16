@@ -101,12 +101,13 @@ class AltaPersona(tk.Toplevel):
         apellido = self.entry_apellido.get()
         dni = self.entry_dni.get()
         contacto = self.entry_contacto.get()
+        correo = self.entry_correo.get() 
         tipo = self.tipo_combobox.get()
         activo = 1 if self.activo_var.get() == "1" else 0 
 
         if nombre and apellido and dni and contacto and tipo:        
             id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
-            insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p)
+            insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p,correo)
             messagebox.showinfo("Éxito", "Registro guardado en la base de datos.")
         else:
             messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
@@ -124,8 +125,9 @@ class AltaPersona(tk.Toplevel):
         self.entry_apellido.delete(0, tk.END)
         self.entry_dni.delete(0, tk.END)
         self.entry_contacto.delete(0, tk.END)
+        self.entry_correo.delete(0, tk.END)
         self.tipo_combobox.set("") 
-        self.activo_var.set("1") 
+        self.activo_var.set("") 
             
 
 

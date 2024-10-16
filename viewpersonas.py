@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk,PhotoImage
+from tkinter import ttk,PhotoImage, messagebox
 import mysql.connector
 
 
@@ -40,6 +40,10 @@ class ViewPersonas(tk.Frame):
         search_button.grid(row=0, column=1, padx=10, pady=10)
         search_button = tk.Button(search_frame, text="+Agregar", command=self.abrir_altap, bg="#ffffff", font=('Calibri', 15),width=8)
         search_button.grid(row=0, column=2, padx=10, pady=10)
+        search_button = tk.Button(search_frame, text="Modificar", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15),width=8)
+        search_button.grid(row=0, column=3, padx=10, pady=10)
+        search_button = tk.Button(search_frame, text="Eliminar", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15),width=8)
+        search_button.grid(row=0, column=4, padx=10, pady=10)
         back_button = tk.Button(self, text="Volver", command=self.volver_menu, bg="#ffffff", font=('Calibri', 15),width=8)
         back_button.grid(row=2, column=0, padx=10, pady=10)
         style = ttk.Style()
@@ -79,7 +83,7 @@ class ViewPersonas(tk.Frame):
         self.load_personas()
 
     def load_personas(self):
-        self.mycursor.execute("SELECT * FROM persona")  # filtrar solo activos si es necesario.
+        self.mycursor.execute("SELECT * FROM persona WHERE activo = 'si'")  # Filtrar solo activos
         personas = self.mycursor.fetchall()
        #IMPORTANTE CORREGIR CADA UNO SEGUN LA BASE DE DATOS QUE TENGA LA POSION DE CADA ATRIBUTO EJ:EN MI BASE DE DATOS TENGO DNI EN LA POSION 3 POR ESO PERSONA[3]
         for persona in personas:
@@ -88,17 +92,32 @@ class ViewPersonas(tk.Frame):
     def search_personas(self):
         dni = self.search_entry.get()
         if dni:
-            self.mycursor.execute("SELECT * FROM persona WHERE dni = %s", (dni,))
+            self.mycursor.execute("SELECT * FROM persona WHERE dni = %s", (dni,))  
             personas = self.mycursor.fetchall()
             self.personas_treeview.delete(*self.personas_treeview.get_children())
             #Repetir procedimiento en la linea 87
             for persona in personas:
                 self.personas_treeview.insert("", "end", values=(persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7], persona[8]))
 
+    def eliminar_persona(self):
+        selected_item = self.personas_treeview.selection()  # Obtiene el ítem seleccionado
+        if not selected_item:  # Verifica si no hay selección
+          messagebox.showwarning("Advertencia", "Por favor, selecciona una persona para eliminar.")  # Línea añadida
+          return  # Salir si no hay selección
+        if selected_item:
+            persona_dni = self.personas_treeview.item(selected_item, 'values')[0]  
+            confirm = messagebox.askyesno("Confirmar Eliminación", f"¿Estás seguro de que deseas eliminar a la persona con DNI {persona_dni}?")
+            if confirm:
+                self.mycursor.execute("UPDATE persona SET activo = 'no' WHERE dni = %s", (persona_dni,))
+                self.mydb.commit()  #
+                self.load_personas() 
+    
+            
+
     def __del__(self):
         self.mycursor.close()
         self.mydb.close()
-        
+  
     def abrir_altap(self):
         #Se llama al modulo dentro de la funcion para evitar problema de importación circular
         from alta_persona2 import AltaPersona
