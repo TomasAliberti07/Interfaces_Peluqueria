@@ -1,72 +1,100 @@
 import tkinter as tk
+from tkinter import ttk
+from tkcalendar import Calendar
+import mysql.connector
 from tkinter import messagebox
-from PIL import Image, ImageTk
-import tkinter.simpledialog
-from tkcalendar import Calendar, DateEntry
 
-class AltaTurno:
-    def __init__(self, master):
-        self.master = master
-        master.title("Alta de Turno")
-        master.configure(bg="#40E0D0")
-        master.geometry("800x600")  # Aumenta el tamaño de la ventana
+# Conexión a la base de datos
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="123",
+    database="base_peluqueria"
+)
+cursor = db.cursor()
 
-        # Cargar y mostrar logo
-        self.logo = Image.open("C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen4.png")
-        self.logo = self.logo.resize((200, 200), Image.Resampling.LANCZOS)  # Aumenta el tamaño del logo
-        self.logo_img = ImageTk.PhotoImage(self.logo)
-        tk.Label(master, image=self.logo_img, bg="#f0f0f0").grid(row=0, column=0, columnspan=2, padx=20, pady=20)
+# Función para registrar turno en la base de datos
+def registrar_turno():
+    fecha = cal.get_date()
+    hora = entry_hora.get()
+    nombre_cliente = entry_cliente.get()
+    servicio = combo_servicio.get()
 
-        # Crear etiquetas y entradas
-        tk.Label(master, text="Fecha del turno:", bg="#f0f0f0", font=("Arial", 18)).grid(row=1, column=0, padx=20, pady=20)  # Aumenta el tamaño de la fuente
-        self.fecha_turno = tk.Entry(master, width=30, font=("Arial", 18))  # Aumenta el tamaño de la entrada
-        self.fecha_turno.grid(row=1, column=1, padx=20, pady=20)
+    # Obtener el id del servicio seleccionado
+    cursor.execute("SELECT id_servicio FROM servicio WHERE nombre = %s", (servicio,))
+    id_servicio = cursor.fetchone()
 
-        # Botón para seleccionar fecha
-        tk.Button(master, text="Seleccionar fecha", command=self.seleccionar_fecha, bg="#008CBA", fg="white", font=("Arial", 18)).grid(row=1, column=2, padx=20, pady=20)
+    if id_servicio:
+        cursor.execute(
+            "INSERT INTO turno (fecha, hora, id_servicio) VALUES (%s, %s, %s)",
+            (fecha, hora, id_servicio[0])
+        )
+        db.commit()
+        messagebox.showinfo("Éxito", "Turno registrado correctamente")
+        mostrar_turnos()
+    else:
+        messagebox.showerror("Error", "Servicio no encontrado")
 
-        tk.Label(master, text="Hora del turno:", bg="#f0f0f0", font=("Arial", 18)).grid(row=2, column=0, padx=20, pady=20)
-        
-        # Label con los dos puntos (:) entre los Spinbox
-        tk.Label(master, text=":", font=("Arial", 18)).grid(row=2, column=1, padx=(60, 0), pady=20)
-        
-        # Crear Spinbox para horas
-        self.hora_turno = tk.Spinbox(master, from_=0, to=23, width=5, font=("Arial", 18), format="%02.0f")
-        self.hora_turno.grid(row=2, column=1, padx=(20, 0), pady=20)
+# Función para mostrar los turnos en la grilla
+def mostrar_turnos():
+    for row in tree.get_children():
+        tree.delete(row)
 
-        # Crear Spinbox para minutos
-        self.minuto_turno = tk.Spinbox(master, from_=0, to=59, width=5, font=("Arial", 18), format="%02.0f")
-        self.minuto_turno.grid(row=2, column=2, padx=(80, 0), pady=20)
-
+    cursor.execute("SELECT fecha, hora, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio")
+    turnos = cursor.fetchall()
     
-        # Crear botón para registrar turno
-        tk.Button(master, text="Registrar turno", command=self.registrar_turno, bg="#008CBA", fg="white", font=("Arial", 18)).grid(row=3, column=1, padx=20, pady=30)  # Aumenta el tamaño del botón
+    for turno in turnos:
+        tree.insert("", "end", values=turno)
 
-    def seleccionar_fecha(self):
-        # Abrir calendario para seleccionar fecha
-        def get_date():
-            selected_date = cal.selection_get()
-            self.fecha_turno.delete(0, tk.END)
-            self.fecha_turno.insert(0, selected_date.strftime("%Y-%m-%d"))
-            top.destroy()
-
-        top = tk.Toplevel(self.master)
-        top.title("Seleccionar fecha")
-        cal = Calendar(top, selectmode='day', year=2023, month=10, day=1)
-        cal.pack(pady=20)
-        tk.Button(top, text="Seleccionar", command=get_date, font=("Arial", 18)).pack(pady=10)  # Aumenta el tamaño del botón
-
-    def registrar_turno(self):
-        # Obtener valores de las entradas
-        fecha_turno = self.fecha_turno.get()
-        hora_turno = self.hora_turno.get()
-        minuto_turno = self.minuto_turno.get()
-
-        # Validar y mostrar la hora y minutos
-        hora_minuto = f"{hora_turno}:{minuto_turno}"
-        messagebox.showinfo("Turno registrado", f"Turno registrado para el {fecha_turno} a las {hora_minuto}")
-
-
+# Ventana principal
 root = tk.Tk()
-alta_turno = AltaTurno(root)
+root.title("Gestor de Turnos")
+root.geometry("800x400")
+
+# Sección izquierda: Ingreso de datos
+frame_left = tk.Frame(root)
+frame_left.pack(side=tk.LEFT, padx=10, pady=10)
+
+label_fecha = tk.Label(frame_left, text="Fecha:")
+label_fecha.pack()
+cal = Calendar(frame_left, date_pattern='y-mm-dd')
+cal.pack(pady=5)
+
+label_hora = tk.Label(frame_left, text="Hora (HH:MM):")
+label_hora.pack()
+entry_hora = tk.Entry(frame_left)
+entry_hora.pack(pady=5)
+
+label_cliente = tk.Label(frame_left, text="Nombre del Cliente:")
+label_cliente.pack()
+entry_cliente = tk.Entry(frame_left)
+entry_cliente.pack(pady=5)
+
+label_servicio = tk.Label(frame_left, text="Servicio:")
+label_servicio.pack()
+combo_servicio = ttk.Combobox(frame_left)
+combo_servicio.pack(pady=5)
+
+# Obtener los servicios disponibles de la base de datos
+cursor.execute("SELECT nombre FROM servicio")
+servicios = cursor.fetchall()
+combo_servicio['values'] = [servicio[0] for servicio in servicios]
+
+button_registrar = tk.Button(frame_left, text="Registrar Turno", command=registrar_turno)
+button_registrar.pack(pady=20)
+
+# Sección derecha: Grilla de turnos
+frame_right = tk.Frame(root)
+frame_right.pack(side=tk.RIGHT, padx=10, pady=10)
+
+columns = ("Fecha", "Hora", "Servicio")
+tree = ttk.Treeview(frame_right, columns=columns, show='headings')
+tree.heading("Fecha", text="Fecha")
+tree.heading("Hora", text="Hora")
+tree.heading("Servicio", text="Servicio")
+tree.pack()
+
+# Mostrar los turnos al iniciar
+mostrar_turnos()
+
 root.mainloop()

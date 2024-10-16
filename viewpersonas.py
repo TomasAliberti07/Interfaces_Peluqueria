@@ -9,7 +9,7 @@ class ViewPersonas(tk.Frame):
         self.master = master
         self.grid_propagate(False)  # Evita que el frame cambie de tamaño
         self.grid(row=0, column=0, sticky="nsew")
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen4.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -19,8 +19,8 @@ class ViewPersonas(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # Cambia esto por tu usuario
-            password="",  # Cambia esto por tu contraseña
-            database="base_peluquerias"  # Cambia esto por tu base de datos
+            password="123",  # Cambia esto por tu contraseña
+            database="base_peluqueria"  # Cambia esto por tu base de datos
         )
         self.mycursor = self.mydb.cursor()
 
@@ -79,22 +79,28 @@ class ViewPersonas(tk.Frame):
         self.load_personas()
 
     def load_personas(self):
-        self.mycursor.execute("SELECT * FROM persona")  # filtrar solo activos si es necesario.
+        self.mycursor.execute("SELECT * FROM persona")
         personas = self.mycursor.fetchall()
-       #IMPORTANTE CORREGIR CADA UNO SEGUN LA BASE DE DATOS QUE TENGA LA POSION DE CADA ATRIBUTO EJ:EN MI BASE DE DATOS TENGO DNI EN LA POSION 3 POR ESO PERSONA[3]
         for persona in personas:
-            self.personas_treeview.insert("", "end", values=(persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7], persona[8]))
-
+            # Imprime la tupla persona para ver su estructura
+            print(persona)
+            # Accede a los índices de manera segura utilizando un bucle for
+            values = []
+            for i, valor in enumerate(persona):
+                values.append(valor)
+            self.personas_treeview.insert("", "end", values=values)
     def search_personas(self):
         dni = self.search_entry.get()
         if dni:
             self.mycursor.execute("SELECT * FROM persona WHERE dni = %s", (dni,))
             personas = self.mycursor.fetchall()
             self.personas_treeview.delete(*self.personas_treeview.get_children())
-            #Repetir procedimiento en la linea 87
             for persona in personas:
-                self.personas_treeview.insert("", "end", values=(persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7], persona[8]))
-
+                values = []
+                for valor in persona:
+                    values.append(valor)
+                self.personas_treeview.insert("", "end", values=values)
+    
     def __del__(self):
         self.mycursor.close()
         self.mydb.close()
@@ -106,10 +112,13 @@ class ViewPersonas(tk.Frame):
         alta.transient(self)  # Hacer que sea una ventana secundaria
         alta.grab_set()
     def volver_menu(self):
-       self.master.destroy()  # Cierra la ventana actual
-       from Menu import Menu  # Importa la clase Menu
-       menu = Menu(self.master)  # Crea una instancia de Menu
-       menu.pack()
+        
+        self.mycursor.close()
+        self.mydb.close()
+        self.master.destroy()  # Cierra la ventana actual
+        from Menu import Menu  # Importa la clase Menu
+        menu = Menu()  # Crea una instancia de Menu
+        menu.mainloop()
 
 if __name__ == "__main__":
     root = tk.Tk()
