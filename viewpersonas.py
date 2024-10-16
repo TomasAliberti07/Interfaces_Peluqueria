@@ -40,7 +40,7 @@ class ViewPersonas(tk.Frame):
         search_button.grid(row=0, column=1, padx=10, pady=10)
         search_button = tk.Button(search_frame, text="+Agregar", command=self.abrir_altap, bg="#ffffff", font=('Calibri', 15),width=8)
         search_button.grid(row=0, column=2, padx=10, pady=10)
-        search_button = tk.Button(search_frame, text="Modificiar", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15),width=8)
+        search_button = tk.Button(search_frame, text="Modificar", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15),width=8)
         search_button.grid(row=0, column=3, padx=10, pady=10)
         search_button = tk.Button(search_frame, text="Eliminar", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15),width=8)
         search_button.grid(row=0, column=4, padx=10, pady=10)

@@ -15,7 +15,7 @@ def conectar_db():
 
 
 
-def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p):
+def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p,correo):
     mydb = conectar_db()
     if mydb is None:
         return  # Si no se pudo conectar, salimos
@@ -24,8 +24,8 @@ def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p):
     try:
         
         activo= "Sí" if activo == 1 else "No"
-        sql = "INSERT INTO persona (nombre,apellido , dni, contacto,tipo, activo,id_tipo_p) VALUES (%s, %s, %s, %s, %s,%s,%s)"
-        val = (apellido, nombre, dni, contacto, tipo,activo,id_tipo_p)
+        sql = "INSERT INTO persona (nombre,apellido , dni, contacto,tipo, activo,id_tipo_p,correo) VALUES (%s, %s, %s, %s, %s,%s,%s,%s)"
+        val = (apellido, nombre, dni, contacto,tipo,activo,id_tipo_p,correo)
         mycursor.execute(sql, val)
         mydb.commit()
         print("Registro insertado correctamente.")
@@ -34,3 +34,4 @@ def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p):
     finally:
         mycursor.close()
         mydb.close()
+
