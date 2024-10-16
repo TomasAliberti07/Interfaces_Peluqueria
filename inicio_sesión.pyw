@@ -14,7 +14,7 @@ class Sesion(tk.Tk):
         self.title("Inicio de Sesión")
 
         
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA\Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
