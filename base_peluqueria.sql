@@ -42,3 +42,8 @@ primary key(id_persona),
 foreign key (id_tipo_p)references tipo_p(id_tipo_p),
 foreign key (id_turno) references turno(id_turno)
 );
+
+
+
+ALTER TABLE `base_peluqueria`.`turno` 
+ADD COLUMN `cliente` VARCHAR(150) NOT NULL AFTER `id_servicio`;
