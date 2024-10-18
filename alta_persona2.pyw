@@ -1,16 +1,18 @@
+import re
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage,messagebox
 from tkinter.ttk import Combobox  
 from conexionbd import insertar_persona
-import mysql.connector
+
 
 # Ventana
 class AltaPersona(tk.Toplevel):
-    def __init__(self,master=None):
-        super().__init__(master)
+    def __init__(self,master=None, actualizar_treeview=None):
+        super().__init__(master,)
         self.title("Alta de persona") 
         self.geometry("1180x610")
         self.configure(bg="#40E0D0")
+        self.actualizar_treeview = actualizar_treeview
         self.resizable(False, False)
         ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
@@ -84,42 +86,48 @@ class AltaPersona(tk.Toplevel):
         self.btn_Limpiar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
         self.btn_Limpiar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
     
-        self.conn = mysql.connector.connect(
-            user='root',
-            password='',
-            host='localhost',
-            database='base_peluquerias'
-            )
-        self.cursor = self.conn.cursor()
     
     def guardar_datos(self):
-        print("Guardar datos llamado")
-        # Desactivar el botón para evitar múltiples clics
-        self.btn_guardar.config(state=tk.DISABLED)
+     print("Guardar datos llamado")
+    # Desactivar el botón para evitar múltiples clics
+     self.btn_guardar.config(state=tk.DISABLED)
+
+     nombre = self.entry_nombre.get()
+     apellido = self.entry_apellido.get()
+     dni = self.entry_dni.get()
+     contacto = self.entry_contacto.get()
+     correo = self.entry_correo.get() 
+     tipo = self.tipo_combobox.get()
+     activo = 1 if self.activo_var.get() == "1" else 0 
+
+    # Validaciones
+     if not self.validar_dni(dni):
+        self.btn_guardar.config(state=tk.NORMAL)
+        return
+     if not self.verificar_correo(correo):
+        self.btn_guardar.config(state=tk.NORMAL)
+        return
+     if not self.validar_telefono(contacto):
+        self.btn_guardar.config(state=tk.NORMAL)
+        return
     
-        nombre = self.entry_nombre.get()
-        apellido = self.entry_apellido.get()
-        dni = self.entry_dni.get()
-        contacto = self.entry_contacto.get()
-        correo = self.entry_correo.get() 
-        tipo = self.tipo_combobox.get()
-        activo = 1 if self.activo_var.get() == "1" else 0 
-
-        if nombre and apellido and dni and contacto and tipo:        
-            id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
-            insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p,correo)
-            messagebox.showinfo("Éxito", "Registro guardado en la base de datos.")
-        else:
-            messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
-    
-        # Reactivar el botón después de un breve tiempo (opcional)
-        self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
-
-
-    def __del__(self):
-        self.conn.close() 
+     if nombre and apellido and dni and contacto and tipo:
+        id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
+        insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p, correo)
+        self.parent.mydb.commit()
         
-         
+        # Llama a load_personas para actualizar la lista en ViewPersonas
+        self.parent.load_personas()
+        messagebox.showinfo("Éxito", "Registro guardado en la base de datos.")
+        
+     else:
+        messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
+     
+
+     # Reactivar el botón después de un breve tiempo (opcional)
+     self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
+    
+ 
     def limpiar_campos(self):
         self.entry_nombre.delete(0, tk.END)
         self.entry_apellido.delete(0, tk.END)
@@ -129,8 +137,37 @@ class AltaPersona(tk.Toplevel):
         self.tipo_combobox.set("") 
         self.activo_var.set("") 
             
+#Funciones de validacion
+    def verificar_correo(self,correo):
+    # Expresión regular para validar el formato del correo electrónico
+     patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    # Comprobar si el correo cumple con el patrón
+     if not re.match(patron, correo):
+        messagebox.showerror("Error", f"{correo} : no es una dirección de correo válida.")
+        return False
+     return True
+    
+    def validar_dni(self,dni):
+    
+     if not dni.isdigit():  # Verifica si el DNI tiene solo números
+        messagebox.showerror("Error", "Solamente se aceptan dígitos en el dni")
+        return False
+     elif len(dni) < 7 or len(dni) > 8:  # Verifica que el DNI tenga 7 u 8 dígitos
+        messagebox.showerror("Error", "El número del dni debe tener 7 u 8 dígitos")
+        return   False   
+     return True
 
+    def validar_telefono(self,contacto):
+      if not contacto.isdigit():  
+        messagebox.showerror("Error", "Solamente se aceptan dígitos en contacto")
+        return False
+      elif len(contacto) < 6 or len(contacto) > 10:
+        messagebox.showerror("Error", "El número de teléfono debe tener entre 6 y 10 dígitos")
+        return False
+      return True
 
 if __name__ == "__main__":
     app = AltaPersona()
     app.mainloop()
+
+
