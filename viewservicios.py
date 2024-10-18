@@ -13,8 +13,8 @@ class ViewServicios(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # Cambia esto por tu usuario
-            password="",  # Cambia esto por tu contraseña
-            database="base_peluquerias"  # Cambia esto por tu base de datos
+            password="123",  # Cambia esto por tu contraseña
+            database="base_peluqueria"  # Cambia esto por tu base de datos
         )
         self.mycursor = self.mydb.cursor()
 

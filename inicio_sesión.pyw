@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter import PhotoImage  
 from Menu import Menu
 from conexionbd import conectar_db
+import mysql.connector  # Agregué esta línea
 
 class Sesion(tk.Tk):
     def __init__(self):
@@ -14,7 +15,7 @@ class Sesion(tk.Tk):
         self.title("Inicio de Sesión")
 
         
-        ruta_imagen = 'C:/Users/GUILLERMINA\Desktop/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
@@ -34,7 +35,12 @@ class Sesion(tk.Tk):
         
         self.boton = tk.Button(self, text="Ingresar", command=self.verificar_sesion, font=("Calibri", 12))
         self.boton.grid(row=2, column=1, padx=10, pady=1)
-
+        self.conn = mysql.connector.connect(
+            user='root',
+            password='123',  # Reemplaza 'tu_contraseña' con la contraseña real
+            host='localhost',
+            database='base_peluqueria'
+            )
     
 
     def verificar_sesion(self):

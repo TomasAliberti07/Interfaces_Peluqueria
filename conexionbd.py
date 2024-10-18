@@ -5,8 +5,8 @@ def conectar_db():
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # PONER SU PROPIO USUARIO
-            password="",  # PONER SU PROPIA CLAVE
-            database="base_peluquerias"
+            password="123",  # PONER SU PROPIA CLAVE
+            database="base_peluqueria"
         )
         return mydb
     except mysql.connector.Error as err:

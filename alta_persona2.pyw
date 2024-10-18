@@ -12,7 +12,7 @@ class AltaPersona(tk.Toplevel):
         self.geometry("1180x610")
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -86,9 +86,9 @@ class AltaPersona(tk.Toplevel):
     
         self.conn = mysql.connector.connect(
             user='root',
-            password='',
+            password='123',
             host='localhost',
-            database='base_peluquerias'
+            database='base_peluqueria'
             )
         self.cursor = self.conn.cursor()
     
