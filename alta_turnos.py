@@ -14,6 +14,16 @@ db = mysql.connector.connect(
 cursor = db.cursor()
 
 # Función para registrar turno en la base de datos
+def mostrar_turnos():
+    for row in tree.get_children():
+        tree.delete(row)
+
+    cursor.execute("SELECT fecha, hora, nombre_cliente, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio")
+    turnos = cursor.fetchall()
+    
+    for turno in turnos:
+        tree.insert("", "end", values=turno)
+
 def registrar_turno():
     fecha = cal.get_date()
     hora = entry_hora.get()
@@ -26,25 +36,14 @@ def registrar_turno():
 
     if id_servicio:
         cursor.execute(
-            "INSERT INTO turno (fecha, hora, id_servicio) VALUES (%s, %s, %s)",
-            (fecha, hora, id_servicio[0])
+            "INSERT INTO turno (fecha, hora, id_servicio, nombre_cliente) VALUES (%s, %s, %s, %s)",
+            (fecha, hora, id_servicio[0], nombre_cliente)
         )
         db.commit()
         messagebox.showinfo("Éxito", "Turno registrado correctamente")
         mostrar_turnos()
     else:
         messagebox.showerror("Error", "Servicio no encontrado")
-
-# Función para mostrar los turnos en la grilla
-def mostrar_turnos():
-    for row in tree.get_children():
-        tree.delete(row)
-
-    cursor.execute("SELECT fecha, hora, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio")
-    turnos = cursor.fetchall()
-    
-    for turno in turnos:
-        tree.insert("", "end", values=turno)
 
 # Ventana principal
 root = tk.Tk()
@@ -87,10 +86,11 @@ button_registrar.pack(pady=20)
 frame_right = tk.Frame(root)
 frame_right.pack(side=tk.RIGHT, padx=10, pady=10)
 
-columns = ("Fecha", "Hora", "Servicio")
+columns = ("Fecha", "Hora", "Nombre Cliente", "Servicio")
 tree = ttk.Treeview(frame_right, columns=columns, show='headings')
 tree.heading("Fecha", text="Fecha")
 tree.heading("Hora", text="Hora")
+tree.heading("Nombre Cliente", text="Nombre Cliente")
 tree.heading("Servicio", text="Servicio")
 tree.pack()
 
