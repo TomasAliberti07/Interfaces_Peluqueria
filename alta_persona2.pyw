@@ -15,7 +15,7 @@ class AltaPersona(tk.Toplevel):
         self.configure(bg="#40E0D0")
         self.actualizar_treeview = actualizar_treeview
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA\Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -87,12 +87,6 @@ class AltaPersona(tk.Toplevel):
         self.btn_Limpiar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
         self.btn_Limpiar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
     
-        self.conn = mysql.connector.connect(
-            user='root',
-            password='123',
-            host='localhost',
-            database='base_peluqueria'
-            )
         self.cursor = self.conn.cursor()
     
     def guardar_datos(self):

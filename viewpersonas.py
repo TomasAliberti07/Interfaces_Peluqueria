@@ -184,11 +184,11 @@ class ModificarPersona:
         self.correo_entry.pack(pady=5)
         
         tk.Label(self.window, text="Activo:", bg="#008B8B").pack(pady=5)
-        self.activo_var = tk.StringVar(value="1" if self.persona[6] == 1 else "0")  # Valor actual de activo
+        self.activo_var = tk.StringVar(value="1" if self.persona[7] == 1 else "0")  
         self.radio_si = tk.Radiobutton(self.window, text="Sí", variable=self.activo_var, value="1", bg="#008B8B")
-        self.radio_no = tk.Radiobutton(self.window, text="No", variable=self.activo_var, value="0", bg="#008B8B")
         self.radio_si.pack(pady=5)
-        self.radio_no.pack(pady=5)
+
+        self.activo_var.set("1")  
         # Botón para confirmar modificación
         modificar_button = tk.Button(self.window, text="Modificar", command=self.modificar_persona)
         modificar_button.pack(pady=20)
@@ -199,8 +199,8 @@ class ModificarPersona:
         nuevo_apellido = self.apellido_entry.get()
         nuevo_contacto = self.contacto_entry.get()
         nuevo_correo = self.correo_entry.get()
-       # Modificar la asignación de nuevo_activo
-        nuevo_activo = "sí" if self.activo_var.get() == "1" else "no"
+        
+        nuevo_activo = "sí"
 
         # Actualizar en la base de datos
         self.parent.mycursor.fetchall() 
