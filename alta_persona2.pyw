@@ -8,7 +8,8 @@ from conexionbd import insertar_persona
 # Ventana
 class AltaPersona(tk.Toplevel):
     def __init__(self,master=None, actualizar_treeview=None):
-        super().__init__(master,)
+        super().__init__(master)
+        self.parent=master
         self.title("Alta de persona") 
         self.geometry("1180x610")
         self.configure(bg="#40E0D0")
@@ -77,10 +78,10 @@ class AltaPersona(tk.Toplevel):
 
         self.activo_var = StringVar(value="1")
         self.radio_si = tk.Radiobutton(frame_datos, text="Sí", variable=self.activo_var, value="1", bg="#48D1CC", font=('Calibri', 15))
-        self.radio_no = tk.Radiobutton(frame_datos, text="No", variable=self.activo_var, value="0", bg="#48D1CC", font=('Calibri', 15))
+        self.radio_no = tk.Radiobutton(frame_datos, text="No", variable=self.activo_var, value="0", bg="#48D1CC", font=('Calibri', 15),state="disabled")
         self.radio_si.grid(row=7, column=2, sticky="w", padx=400)
         self.radio_no.grid(row=7, column=2,  padx=10)
-
+        
         self.btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="light grey", font=('Calibri', 15))
         self.btn_guardar.grid(row=9, column=2, columnspan=2, padx=400,pady=20,sticky="w")
         self.btn_Limpiar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
@@ -135,12 +136,13 @@ class AltaPersona(tk.Toplevel):
         self.entry_contacto.delete(0, tk.END)
         self.entry_correo.delete(0, tk.END)
         self.tipo_combobox.set("") 
-        self.activo_var.set("") 
+        self.activo_var.set("1") 
             
 #Funciones de validacion
     def verificar_correo(self,correo):
     # Expresión regular para validar el formato del correo electrónico
-     patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+     patron = r'^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\.[a-zA-ZñÑ]{2,}$'
+
     # Comprobar si el correo cumple con el patrón
      if not re.match(patron, correo):
         messagebox.showerror("Error", f"{correo} : no es una dirección de correo válida.")

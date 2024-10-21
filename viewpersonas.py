@@ -38,7 +38,7 @@ class ViewPersonas(tk.Frame):
         search_button = tk.Button(search_frame, text="Buscar", command=self.search_personas, bg="#ffffff", font=('Calibri', 15), width=8)
         search_button.grid(row=0, column=1, padx=10, pady=10)
         
-        search_button = tk.Button(search_frame, text="+Agregar", command=self.abrir_altap, bg="#ffffff", font=('Calibri', 15), width=8)
+        search_button = tk.Button(search_frame, text="+ Agregar", command=self.abrir_altap, bg="#ffffff", font=('Calibri', 15), width=8)
         search_button.grid(row=0, column=2, padx=10, pady=10)
 
         search_button = tk.Button(search_frame, text="Modificar", command=self.modificar_persona, bg="#ffffff", font=('Calibri', 15), width=8)
@@ -182,7 +182,13 @@ class ModificarPersona:
         self.correo_entry = tk.Entry(self.window)
         self.correo_entry.insert(0, self.persona[9])  # Cargar el correo actual
         self.correo_entry.pack(pady=5)
-
+        
+        tk.Label(self.window, text="Activo:", bg="#008B8B").pack(pady=5)
+        self.activo_var = tk.StringVar(value="1" if self.persona[6] == 1 else "0")  # Valor actual de activo
+        self.radio_si = tk.Radiobutton(self.window, text="Sí", variable=self.activo_var, value="1", bg="#008B8B")
+        self.radio_no = tk.Radiobutton(self.window, text="No", variable=self.activo_var, value="0", bg="#008B8B")
+        self.radio_si.pack(pady=5)
+        self.radio_no.pack(pady=5)
         # Botón para confirmar modificación
         modificar_button = tk.Button(self.window, text="Modificar", command=self.modificar_persona)
         modificar_button.pack(pady=20)
@@ -193,12 +199,15 @@ class ModificarPersona:
         nuevo_apellido = self.apellido_entry.get()
         nuevo_contacto = self.contacto_entry.get()
         nuevo_correo = self.correo_entry.get()
+       # Modificar la asignación de nuevo_activo
+        nuevo_activo = "sí" if self.activo_var.get() == "1" else "no"
 
         # Actualizar en la base de datos
+        self.parent.mycursor.fetchall() 
         self.parent.mycursor.execute("""
-            UPDATE persona SET nombre = %s, apellido = %s, contacto = %s, correo = %s 
+            UPDATE persona SET nombre = %s, apellido = %s, contacto = %s, correo = %s , activo=%s
             WHERE dni = %s
-        """, (nuevo_nombre, nuevo_apellido, nuevo_contacto, nuevo_correo, self.persona[3]))  # Usar el DNI para identificar a la persona
+        """, (nuevo_nombre, nuevo_apellido, nuevo_contacto, nuevo_correo,nuevo_activo, self.persona[3]))  # Usar el DNI para identificar a la persona
         self.parent.mydb.commit()
 
         messagebox.showinfo("Éxito", "Persona modificada con éxito.")
