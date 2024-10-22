@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk,messagebox
 from conexionbd import conectar_db
-#import mysql.connector
+import mysql.connector
     #cursor= cnx.cursor()
    # return cnx,cursor
 
@@ -39,6 +39,15 @@ class ListadoProductos(tk.Tk):
         self.entry_precio.pack()
         self.btn_guardar = tk.Button(self, text="Guardar", command=self.guardar_datos)
         self.btn_guardar.pack(pady=10)
+
+        #boton buscar
+        self.boton_buscar = tk.Button(self, text="Buscar", command=self.buscar_producto)
+        self.boton_buscar.pack(pady=10)
+
+        #entry para buscar
+        self.entry_buscar = tk.Entry(self)
+        self.entry_buscar.pack(pady=10)
+
         #obtener datos de la base de datos
         self.obtener_datos()
     def obtener_datos(self):
@@ -76,6 +85,32 @@ class ListadoProductos(tk.Tk):
             messagebox.showerror("Error", "El precio debe ser un número")
             return False
         return True
+
+    def buscar_producto(self):
+        buscar_texto = self.entry_buscar.get()
+        if not buscar_texto:
+            messagebox.showerror("Error", "Ingrese un término de búsqueda")
+            return
+        
+        mydb, cursor = conectar_db()
+        if mydb is None or cursor is None:
+            messagebox.showerror("Error", "Error al conectar a la base de datos")
+            return
+        
+        query = "SELECT id_producto, nombre, marca, cantidad, precio FROM producto WHERE nombre LIKE %s OR marca LIKE %s"
+        valores = (f"%{buscar_texto}%", f"%{buscar_texto}%")
+        
+        try:
+            cursor.execute(query, valores)
+            rows = cursor.fetchall()
+            self.tree.delete(*self.tree.get_children())
+            for row in rows:
+                self.tree.insert("", tk.END, values=row)
+        except mysql.connector.Error as e:
+            messagebox.showerror("Error", f"Error al buscar los datos: {e}")
+        finally:
+            cursor.close()
+            mydb.close()
 
     def modificar_producto(self):
         selected_items = self.tree.selection()
