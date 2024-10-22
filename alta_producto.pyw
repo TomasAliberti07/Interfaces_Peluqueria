@@ -11,7 +11,7 @@ class AltaProducto(tk.Tk):
         self.geometry("1200x500")
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/GUILLERMINA\Desktop/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))

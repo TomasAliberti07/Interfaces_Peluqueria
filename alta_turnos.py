@@ -4,6 +4,7 @@ from tkcalendar import Calendar
 import mysql.connector
 from tkinter import messagebox
 from datetime import datetime  # Importar datetime
+from PIL import Image, ImageTk  # Importar PIL para manejar imágenes
 
 # Conexión a la base de datos
 db = mysql.connector.connect(
@@ -16,13 +17,19 @@ cursor = db.cursor()
 
 # Función para mostrar turnos filtrados por fecha
 def mostrar_turnos(fecha=None):
+    # Limpiar el Treeview
     for row in tree.get_children():
         tree.delete(row)
 
+    # Asegurarse de que no haya resultados no leídos
+    if cursor.stored_results():
+        cursor.fetchall()  # Descartar cualquier resultado no leído
+
+    # Ejecutar la nueva consulta
     if fecha:
-        cursor.execute("SELECT fecha, hora, nombre_cliente, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio WHERE fecha = %s", (fecha,))
+        cursor.execute("SELECT fecha, hora, nombre_cliente, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio WHERE fecha = %s ORDER BY fecha DESC", (fecha,))
     else:
-        cursor.execute("SELECT fecha, hora, nombre_cliente, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio")
+        cursor.execute("SELECT fecha, hora, nombre_cliente, nombre FROM turno JOIN servicio ON turno.id_servicio = servicio.id_servicio ORDER BY fecha DESC")
     
     turnos = cursor.fetchall()
     
@@ -105,49 +112,49 @@ def modificar_turno():
 def eliminar_turno():
     global turno_id
     if not turno_id:
-        messagebox.showerror("Error", "No se ha seleccionado ningún turno para eliminar.")
+        messagebox.showerror("Error", " No se ha seleccionado ningún turno para eliminar.")
         return
 
     # Confirmar la eliminación
     confirm = messagebox.askyesno("Confirmar", "¿Estás seguro de que deseas eliminar este turno?")
     if confirm:
-        cursor.execute("DELETE FROM turno WHERE id_turno = %s", (turno_id,))
+        cursor .execute("DELETE FROM turno WHERE id_turno = %s", (turno_id,))
         db.commit()
         messagebox.showinfo("Éxito", "Turno eliminado correctamente")
         mostrar_turnos()
-        turno_id = None  # Reiniciar el ID del turno seleccionado
+        turno_id = None
 
-# Ventana principal
+# Crear la ventana principal
 root = tk.Tk()
-root.title("Gestor de Turnos")
-root.geometry("1280x720")
+root.title("Sistema de Turnos de Peluquería")
+root.configure(background='#008B8B')  # Establecer el color de fondo de la ventana principal
 
 # Sección izquierda : Ingreso de datos
-frame_left = tk.Frame(root)
+frame_left = tk.Frame(root, bg='#66CCCC')  # Establecer el color de fondo del frame izquierdo
 frame_left.pack(side=tk.LEFT, padx=10, pady=10)
 
-label_fecha = tk.Label(frame_left, text="Fecha:")
+label_fecha = tk.Label(frame_left, text="Fecha:", bg='#66CCCC')  # Establecer el color de fondo del label
 label_fecha.pack()
-cal = Calendar(frame_left, date_pattern='y-mm-dd')
+cal = Calendar(frame_left, date_pattern='y-mm-dd', background='#66CCCC', foreground='black', borderwidth=1)
 cal.pack(pady=5)
 
 # Mover el botón de filtrar debajo del calendario
-button_filtrar = tk.Button(frame_left, text="Filtrar Turnos por Fecha", command=filtrar_por_fecha)
+button_filtrar = tk.Button(frame_left, text="Filtrar Turnos por Fecha", command=filtrar_por_fecha, bg='#F7F7F7')  # Establecer el color de fondo del botón
 button_filtrar.pack(pady=10)
 
-label_hora = tk.Label(frame_left, text="Hora (HH:MM):")
+label_hora = tk.Label(frame_left, text="Hora (HH:MM):", bg='#66CCCC')  # Establecer el color de fondo del label
 label_hora.pack()
 
 entry_hora = tk.Entry(frame_left)
 entry_hora.insert(0, "HH:MM")  # Establecer el valor inicial
 entry_hora.pack(pady=5)
 
-label_cliente = tk.Label(frame_left, text="Nombre del Cliente:")
+label_cliente = tk.Label(frame_left, text="Nombre del Cliente:", bg='#66CCCC')  # Establecer el color de fondo del label
 label_cliente.pack()
 entry_cliente = tk.Entry(frame_left)
 entry_cliente.pack(pady=5)
 
-label_servicio = tk.Label(frame_left, text="Servicio:")
+label_servicio = tk.Label(frame_left, text="Servicio:", bg='#66CCCC')  # Establecer el color de fondo del label
 label_servicio.pack()
 combo_servicio = ttk.Combobox(frame_left)
 combo_servicio.pack(pady=5)
@@ -157,39 +164,49 @@ cursor.execute("SELECT nombre FROM servicio")
 servicios = cursor.fetchall()
 combo_servicio['values'] = [servicio[0] for servicio in servicios]
 
-button_registrar = tk.Button(frame_left, text="Registrar Turno", command=registrar_turno)
-button_registrar.pack(pady=20)
-
-# Botón para modificar el turno
-button_modificar = tk.Button(frame_left, text="Modificar Turno", command=modificar_turno)
-button_modificar.pack(pady=20)
-#Boton Eliminar el turno
-button_eliminar = tk.Button(frame_left, text="Eliminar Turno", command=eliminar_turno)
-button_eliminar.pack(pady=20)
-
 # Sección derecha: Grilla de turnos
-frame_right = tk.Frame(root)
+frame_right = tk.Frame(root, bg='#66CCCC')  # Establecer el color de fondo del frame derecho
 frame_right.pack(side=tk.RIGHT, padx=10, pady=10)
 
-label_turnos = tk.Label(frame_right, text="Turnos Registrados", font=("Arial", 14))
+label_turnos = tk.Label(frame_right, text="Turnos Registrados", font=("Arial", 20), bg='#66CCCC')  # Establecer el color de fondo del label y aumentar el tamaño de la fuente
 label_turnos.pack(pady=5)
 
 # Configuración de la grilla (Treeview)
 columns = ("Fecha", "Hora", "Nombre Cliente", "Servicio")
-tree = ttk.Treeview(frame_right, columns=columns, show='headings')
+tree = ttk.Treeview(frame_right, columns=columns, show='headings', selectmode='browse')
 tree.heading("Fecha", text="Fecha")
 tree.heading("Hora", text="Hora")
 tree.heading("Nombre Cliente", text="Nombre Cliente")
 tree.heading("Servicio", text="Servicio")
-tree.pack()
+tree.pack(pady=10)
 
 # Asignar evento de selección de fila
 tree.bind("<<TreeviewSelect>>", cargar_turno_seleccionado)
 
+# Frame para botones
+frame_botones = tk.Frame(frame_right, bg='#66CCCC')  # Establecer el color de fondo del frame de botones
+frame_botones.pack(pady=20)
+
+# Botones
+button_registrar = tk.Button(frame_botones, text="Registrar Turno", command=registrar_turno, bg='#F7F7F7')  # Establecer el color de fondo del botón
+button_registrar.pack(side=tk.LEFT, padx=10)
+
+button_modificar = tk.Button(frame_botones, text="Modificar Turno", command=modificar_turno, bg='#F7F7F7')  # Establecer el color de fondo del botón
+button_modificar.pack(side=tk.LEFT, padx=10)
+
+button_eliminar = tk.Button(frame_botones, text="Eliminar Turno", command=eliminar_turno, bg='#F7F7F7')  # Establecer el color de fondo del botón
+button_eliminar.pack(side=tk.LEFT, padx=10)
+
+# Logo de la peluquería
+image = Image.open("C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png")
+photo = ImageTk.PhotoImage(image)
+logo_label = tk.Label(frame_right, image=photo, bg='#66CCCC')  # Establecer el color de fondo del label
+logo_label.image = photo
+logo_label.pack(side=tk.BOTTOM, anchor=tk.SE, padx=10, pady=10)
+
 # Mostrar todos los turnos al iniciar
 mostrar_turnos()
 
-# Variable global para almacenar el ID del turno seleccionado
 turno_id = None
 
 root.mainloop()

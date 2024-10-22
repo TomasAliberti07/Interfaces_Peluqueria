@@ -11,7 +11,7 @@ class Menu(tk.Tk):
         self.title("Menu")
 
         # Cargar imagen
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen4.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
 
         # Etiqueta para mostrar la imagen
