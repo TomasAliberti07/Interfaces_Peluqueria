@@ -1,17 +1,21 @@
+import mysql.connector
+
 import tkinter as tk
-from tkinter import LabelFrame, Entry, Button 
+from tkinter import LabelFrame, Entry, Button, messagebox
 from tkinter import PhotoImage
 from conexionbd import conectar_db
+
+
 
 # Ventana
 class AltaProducto(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Alta de producto") 
-        self.geometry("1200x500")
+        self.geometry("1110x510")
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/ramye/Desktop/Facultad/Programación 2do año/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
@@ -50,26 +54,58 @@ class AltaProducto(tk.Tk):
         # Botón de Envío
         btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="green", font=('Calibri', 15))
         btn_guardar.grid(row=9, column=1, columnspan=2, pady=20)
-
-    def guardar_datos(self):
-        cnx = conectar_db()
-        cursor = cnx.cursor()
-
+    def validar_campos(self):
         nombre = self.entry_nombre.get()
         marca = self.entry_marca.get()
         cantidad = self.entry_cantidad.get()
         precio = self.entry_precio.get()
 
+        if nombre == "" or marca == "" or cantidad == "" or precio == "":
+            messagebox.showerror("Error", "Todos los campos son requeridos")
+            return False
+        if not cantidad.isdigit():
+            messagebox.showerror("Error", "La cantidad debe ser un número entero")
+            return False
+        if not precio.replace('.','',1).isdigit():
+            messagebox.showerror("Error", "El precio debe ser un número")
+            return False
+        return True
+
+    def limpiar_campos(self):
+        self.entry_nombre.delete(0, tk.END)
+        self.entry_marca.delete(0, tk.END)
+        self.entry_cantidad.delete(0, tk.END)
+        self.entry_precio.delete(0, tk.END)
+
+    def guardar_datos(self):
+        if not self.validar_campos():
+            return
+
+        cnx,cursor = conectar_db()
+        if cnx is None or cursor is None:
+            messagebox.showerror("Error al conectar a la base de datos")
+            return
+        nombre = self.entry_nombre.get()
+        marca = self.entry_marca.get()
+        cantidad = self.entry_cantidad.get()
+        precio = self.entry_precio.get()
+    
         query = "INSERT INTO producto (nombre, marca, cantidad, precio) VALUES (%s, %s, %s, %s)"
         valores = (nombre, marca, cantidad, precio)
-
-        cursor.execute(query, valores)
-        cnx.commit()
-
-        print("Datos Guardados")
-        cursor.close()
-        cnx.close() 
+        try:
+            cursor.execute(query, valores)
+            cnx.commit()
+            messagebox.showinfo("Éxito datos guardados", "Datos guardados")
+            print("Datos guardados")
+            self.limpiar_campos()
+        except mysql.connector.Error as e:
+            messagebox.showerror("Error al guardar los datos", f"Error: {e}")
+        finally:        
+            cursor.close()
+            cnx.close()    
+       
 
 if __name__ == "__main__":
     app = AltaProducto()
     app.mainloop()
+
