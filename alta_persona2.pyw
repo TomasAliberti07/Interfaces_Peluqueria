@@ -3,19 +3,34 @@ import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage,messagebox
 from tkinter.ttk import Combobox  
 from conexionbd import insertar_persona
+import mysql.connector  # Asegúrate de tener esta importación
 
-
-# Ventana
 class AltaPersona(tk.Toplevel):
-    def __init__(self,master=None, actualizar_treeview=None):
+    def __init__(self, master=None, actualizar_treeview=None):
         super().__init__(master)
-        self.parent=master
+        self.parent = master
         self.title("Alta de persona") 
         self.geometry("1180x610")
         self.configure(bg="#40E0D0")
         self.actualizar_treeview = actualizar_treeview
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/GUILLERMINA\Desktop/Interfaces_Peluqueria/imagen3.png'
+
+        # Establecer la conexión a la base de datos MySQL
+        try:
+            self.conn = mysql.connector.connect(
+                host="localhost",  # Cambia esto si tu base de datos está en otro host
+                user="root",       # Cambia esto por tu usuario de MySQL
+                password="123",    # Cambia esto por tu contraseña de MySQL
+                database="base_peluqueria"  # Cambia esto por el nombre de tu base de datos
+            )
+            self.cursor = self.conn.cursor()
+        except mysql.connector.Error as err:
+            messagebox.showerror("Error", f"Error al conectar a la base de datos: {err}")
+            self.destroy()  # Cierra la ventana si la conexión falla
+
+        # El resto de tu código de inicialización...
+        
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
