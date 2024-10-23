@@ -4,11 +4,11 @@ import mysql.connector
 
 class ViewPersonas(tk.Frame):
     def __init__(self, master=None):
-        super().__init__(master, bg="#008B8B", width=1366, height=768)
+        super().__init__(master, bg="#40E0D0", width=1366, height=768)
         self.master = master
         self.grid_propagate(False)  # Evita que el frame cambie de tamaño
         self.grid(row=0, column=0, sticky="nsew")
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -18,8 +18,8 @@ class ViewPersonas(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # Cambia esto por tu usuario
-            password="123",  # Cambia esto por tu contraseña
-            database="base_peluqueria"  # Cambia esto por tu base de datos
+            password="",  # Cambia esto por tu contraseña
+            database="base_peluquerias"  # Cambia esto por tu base de datos
         )
         self.mycursor = self.mydb.cursor()
 
@@ -27,7 +27,7 @@ class ViewPersonas(tk.Frame):
 
     def create_widgets(self):
         # Frame de búsqueda
-        search_frame = tk.LabelFrame(self, text="Buscar por DNI", bg="#008B8B", font=('Calibri', 20), borderwidth=5)
+        search_frame = tk.LabelFrame(self, text="Buscar por DNI", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
         search_frame.grid(row=0, column=0, padx=70, pady=20, sticky="ew")
 
         # Entrada de búsqueda
@@ -124,7 +124,7 @@ class ViewPersonas(tk.Frame):
         selected_item = self.personas_treeview.selection()  
         if not selected_item:  # Verifica si no hay selección
             messagebox.showwarning("Advertencia", "Por favor, selecciona una persona para eliminar.")  
-            return  # Salir si no hay selección
+            return  
 
         persona_dni = self.personas_treeview.item(selected_item, 'values')[0]  
         confirm = messagebox.askyesno("Confirmar Eliminación", f"¿Estás seguro de que deseas eliminar a la persona con DNI {persona_dni}?")
@@ -135,8 +135,8 @@ class ViewPersonas(tk.Frame):
         self.load_personas() 
     def abrir_altap(self):
         from alta_persona2 import AltaPersona
-        alta = AltaPersona(self)  # Crea una nueva ventana de alta persona
-        alta.transient(self)  # Hacer que sea una ventana secundaria
+        alta = AltaPersona(self)  
+        alta.transient(self)  
         alta.grab_set()
         
 
@@ -144,10 +144,7 @@ class ViewPersonas(tk.Frame):
         self.mycursor.close()
         self.mydb.close()
         self.master.destroy()  # Cierra la ventana actual
-        from Menu import Menu  # Importa la clase Menu
-        menu = Menu()  # Crea una instancia de Menu
-        menu.mainloop()
-
+       
 class ModificarPersona:
     def __init__(self, parent, persona):
         self.parent = parent
