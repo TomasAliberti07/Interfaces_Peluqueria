@@ -2,7 +2,7 @@ import re
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage,messagebox
 from tkinter.ttk import Combobox  
-import conexionbd
+from conexionbd import conectar_db
 import mysql.connector  
 class AltaPersona(tk.Toplevel):
     def __init__(self, master=None, actualizar_treeview=None):
@@ -97,7 +97,7 @@ class AltaPersona(tk.Toplevel):
 
    
     def insertar_persona(self, nombre,apellido, dni, contacto, activo,tipo,id_tipo_p,correo):
-      mydb = conexionbd.conectar_db()
+      mydb = conectar_db()
       if mydb is None:
         return  
 
