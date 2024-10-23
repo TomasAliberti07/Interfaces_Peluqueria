@@ -80,10 +80,14 @@ def cargar_turno_seleccionado(event):
         entry_cliente.insert(0, item_values[2])  # Nombre del Cliente
         combo_servicio.set(item_values[3])  # Servicio
         global turno_id
+
+        # Asegurarse de que no haya resultados no leídos
+        if cursor.stored_results():
+            cursor.fetchall()  # Descartar cualquier resultado no leído
+
         # Obtener el id del turno seleccionado
         cursor.execute("SELECT id_turno FROM turno WHERE fecha = %s AND hora = %s AND nombre_cliente = %s", (item_values[0], item_values[1], item_values[2]))
         turno_id = cursor.fetchone()[0]  # Guardar el ID del turno seleccionado
-
 def modificar_turno():
     if not turno_id:
         messagebox.showerror("Error", "No se ha seleccionado ningún turno para modificar.")
