@@ -127,9 +127,17 @@ def eliminar_turno():
         messagebox.showinfo("Éxito", "Turno eliminado correctamente")
         mostrar_turnos()
         turno_id = None
+def volver():
+    # Aquí puedes implementar la lógica para volver a la vista anterior
+    # Por ejemplo, si estás en un formulario, puedes cerrarlo o limpiar los campos
+    entry_hora.delete(0, tk.END)
+    entry_cliente.delete(0, tk.END)
+    combo_servicio.set('')
+    mostrar_turnos()  # Volver a mostrar la lista de turnos
 
 # Crear la ventana principal
 root = tk.Tk()
+root.resizable(False, False)  # Deshabilitar el redimensionamiento de la ventana
 root.title("Sistema de Turnos de Peluquería")
 root.configure(background='#008B8B')  # Establecer el color de fondo de la ventana principal
 
@@ -200,6 +208,9 @@ button_modificar.pack(side=tk.LEFT, padx=10)
 
 button_eliminar = tk.Button(frame_botones, text="Eliminar Turno", command=eliminar_turno, bg='#F7F7F7')  # Establecer el color de fondo del botón
 button_eliminar.pack(side=tk.LEFT, padx=10)
+# Botón Volver
+button_volver = tk.Button(frame_botones, text="Volver", command=volver, bg='#F7F7F7')  # Establecer el color de fondo del botón
+button_volver.pack(side=tk.LEFT, padx=10)
 
 # Logo de la peluquería
 image = Image.open("C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png")
