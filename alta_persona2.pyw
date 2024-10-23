@@ -2,9 +2,8 @@ import re
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage,messagebox
 from tkinter.ttk import Combobox  
-from conexionbd import insertar_persona
-import mysql.connector  # Asegúrate de tener esta importación
-
+import conexionbd
+import mysql.connector  
 class AltaPersona(tk.Toplevel):
     def __init__(self, master=None, actualizar_treeview=None):
         super().__init__(master)
@@ -14,23 +13,11 @@ class AltaPersona(tk.Toplevel):
         self.configure(bg="#40E0D0")
         self.actualizar_treeview = actualizar_treeview
         self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", self.bloquear_x)
 
-        # Establecer la conexión a la base de datos MySQL
-        try:
-            self.conn = mysql.connector.connect(
-                host="localhost",  # Cambia esto si tu base de datos está en otro host
-                user="root",       # Cambia esto por tu usuario de MySQL
-                password="123",    # Cambia esto por tu contraseña de MySQL
-                database="base_peluqueria"  # Cambia esto por el nombre de tu base de datos
-            )
-            self.cursor = self.conn.cursor()
-        except mysql.connector.Error as err:
-            messagebox.showerror("Error", f"Error al conectar a la base de datos: {err}")
-            self.destroy()  # Cierra la ventana si la conexión falla
-
-        # El resto de tu código de inicialización...
+      
         
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -97,12 +84,39 @@ class AltaPersona(tk.Toplevel):
         self.radio_si.grid(row=7, column=2, sticky="w", padx=400)
         self.radio_no.grid(row=7, column=2,  padx=10)
         
-        self.btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="light grey", font=('Calibri', 15))
+        self.btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="light grey", font=('Calibri', 15),width=8)
         self.btn_guardar.grid(row=9, column=2, columnspan=2, padx=400,pady=20,sticky="w")
-        self.btn_Limpiar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15))
+        self.btn_Limpiar = Button(frame_datos, text="Limpiar", command=self.limpiar_campos, bg="light grey", font=('Calibri', 15),width=8)
         self.btn_Limpiar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
+        self.btn_volver = Button(frame_datos, text="Volver", command=self.volver_consutla, bg="light grey", font=('Calibri', 15),width=8)
+        self.btn_volver.grid(row=9, column=2, columnspan=3,padx=10,  pady=20,sticky="e")
+    
     
         self.cursor = self.conn.cursor()
+
+
+   
+    def insertar_persona(self, nombre,apellido, dni, contacto, activo,tipo,id_tipo_p,correo):
+      mydb = conexionbd.conectar_db()
+      if mydb is None:
+        return  
+
+      mycursor = mydb.cursor()
+      try:
+        
+        activo= "Sí" if activo == 1 else "No"
+        sql = "INSERT INTO persona (nombre,apellido , dni, contacto,tipo, activo,id_tipo_p,correo) VALUES (%s, %s, %s, %s, %s,%s,%s,%s)"
+        val = (nombre, apellido, dni, contacto,tipo,activo,id_tipo_p,correo)
+        mycursor.execute(sql, val)
+        mydb.commit()
+        print("Registro insertado correctamente.")
+      except mysql.connector.Error as err:
+        print(f"Error al insertar en la base de datos: {err}")
+      finally:
+        mycursor.close()
+        mydb.close()
+
+
     
     def guardar_datos(self):
      print("Guardar datos llamado")
@@ -130,7 +144,7 @@ class AltaPersona(tk.Toplevel):
     
      if nombre and apellido and dni and contacto and tipo:
         id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
-        insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p, correo)
+        self.insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p, correo)
         self.parent.mydb.commit()
         
         # Llama a load_personas para actualizar la lista en ViewPersonas
@@ -153,6 +167,14 @@ class AltaPersona(tk.Toplevel):
         self.entry_correo.delete(0, tk.END)
         self.tipo_combobox.set("") 
         self.activo_var.set("1") 
+
+    def bloquear_x(self):
+       messagebox.showwarning("Advertencia","Para cerrar la pestaña presione 'volver' ")
+
+    def volver_consutla(self):
+        self.destroy()
+
+   
             
 #Funciones de validacion
     def verificar_correo(self,correo):
