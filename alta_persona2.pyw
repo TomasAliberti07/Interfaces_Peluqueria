@@ -2,7 +2,7 @@ import re
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, StringVar, PhotoImage,messagebox
 from tkinter.ttk import Combobox  
-from conexionbd import conectar_db
+from conexionbd import insertar_persona
 import mysql.connector  
 class AltaPersona(tk.Toplevel):
     def __init__(self, master=None, actualizar_treeview=None):
@@ -90,73 +90,50 @@ class AltaPersona(tk.Toplevel):
         self.btn_Limpiar.grid(row=9, column=2, columnspan=3,padx=500,  pady=20,sticky="e")
         self.btn_volver = Button(frame_datos, text="Volver", command=self.volver_consutla, bg="light grey", font=('Calibri', 15),width=8)
         self.btn_volver.grid(row=9, column=2, columnspan=3,padx=10,  pady=20,sticky="e")
-    
-    
-        self.cursor = self.conn.cursor()
 
 
-   
-    def insertar_persona(self, nombre,apellido, dni, contacto, activo,tipo,id_tipo_p,correo):
-      mydb = conectar_db()
-      if mydb is None:
-        return  
-
-      mycursor = mydb.cursor()
-      try:
-        
-        activo= "Sí" if activo == 1 else "No"
-        sql = "INSERT INTO persona (nombre,apellido , dni, contacto,tipo, activo,id_tipo_p,correo) VALUES (%s, %s, %s, %s, %s,%s,%s,%s)"
-        val = (nombre, apellido, dni, contacto,tipo,activo,id_tipo_p,correo)
-        mycursor.execute(sql, val)
-        mydb.commit()
-        print("Registro insertado correctamente.")
-      except mysql.connector.Error as err:
-        print(f"Error al insertar en la base de datos: {err}")
-      finally:
-        mycursor.close()
-        mydb.close()
-
-
-    
     def guardar_datos(self):
-     print("Guardar datos llamado")
+      print("Guardar datos llamado")
     # Desactivar el botón para evitar múltiples clics
-     self.btn_guardar.config(state=tk.DISABLED)
+      self.btn_guardar.config(state=tk.DISABLED)
 
-     nombre = self.entry_nombre.get()
-     apellido = self.entry_apellido.get()
-     dni = self.entry_dni.get()
-     contacto = self.entry_contacto.get()
-     correo = self.entry_correo.get() 
-     tipo = self.tipo_combobox.get()
-     activo = 1 if self.activo_var.get() == "1" else 0 
+      nombre = self.entry_nombre.get().upper()
+      apellido = self.entry_apellido.get().upper()
+      dni = self.entry_dni.get()
+      contacto = self.entry_contacto.get()
+      correo = self.entry_correo.get().upper()
+      tipo = self.tipo_combobox.get()
+      activo = 1 if self.activo_var.get() == "1" else 0 
+    
+    # Reactivar el botón después de un breve tiempo (opcional)
+      self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
 
     # Validaciones
-     if not self.validar_dni(dni):
+      if not self.validar_dni(dni):
         self.btn_guardar.config(state=tk.NORMAL)
         return
-     if not self.verificar_correo(correo):
+      if not self.verificar_correo(correo):
         self.btn_guardar.config(state=tk.NORMAL)
         return
-     if not self.validar_telefono(contacto):
+      if not self.validar_telefono(contacto):
         self.btn_guardar.config(state=tk.NORMAL)
         return
     
-     if nombre and apellido and dni and contacto and tipo:
+      if nombre and apellido and dni and contacto and tipo:
         id_tipo_p = self.tipo_to_id[tipo]  # Obtener el id_tipo_p correspondiente
-        self.insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p, correo)
+        insertar_persona(nombre, apellido, dni, contacto, activo, tipo, id_tipo_p, correo)
         self.parent.mydb.commit()
         
         # Llama a load_personas para actualizar la lista en ViewPersonas
         self.parent.load_personas()
         messagebox.showinfo("Éxito", "Registro guardado en la base de datos.")
         
-     else:
+      else:
         messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
      
 
      # Reactivar el botón después de un breve tiempo (opcional)
-     self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
+      self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
     
  
     def limpiar_campos(self):

@@ -58,7 +58,7 @@ class ViewPersonas(tk.Frame):
                         fieldbackground="#ffffff")
         
         # Treeview de personas
-        self.personas_treeview = ttk.Treeview(self, columns=("dni", "nombre", "apellido", "contacto", "correo", "tipo", "activo", "id_tipo_p", "id_turno"), show="headings")
+        self.personas_treeview = ttk.Treeview(self, columns=("dni", "nombre", "apellido", "contacto", "correo", "tipo", "activo", "id_tipo_p"), show="headings")
         self.personas_treeview.grid(row=1, column=0, sticky="nsew", padx=70, pady=10)
 
         # Configuración del Treeview
@@ -70,7 +70,7 @@ class ViewPersonas(tk.Frame):
         self.personas_treeview.heading("tipo", text="Tipo")
         self.personas_treeview.heading("activo", text="Activo")
         self.personas_treeview.heading("id_tipo_p", text="Tipo ID")
-        self.personas_treeview.heading("id_turno", text="Turno ID")
+       
 
         # Ancho de las columnas y datos centrados
         self.personas_treeview.column("nombre", anchor='center', width=150)
@@ -81,7 +81,7 @@ class ViewPersonas(tk.Frame):
         self.personas_treeview.column("tipo", anchor='center', width=150)
         self.personas_treeview.column("activo", anchor='center', width=100)
         self.personas_treeview.column("id_tipo_p", anchor='center', width=100)
-        self.personas_treeview.column("id_turno", anchor='center', width=100)
+        
 
         # Carga los datos iniciales
         self.load_personas()
@@ -91,18 +91,25 @@ class ViewPersonas(tk.Frame):
         personas = self.mycursor.fetchall()
         self.personas_treeview.delete(*self.personas_treeview.get_children())  # Limpiar el Treeview antes de cargar
         for persona in personas:
-            values = (persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7], persona[8])
+            values = (persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7])
             self.personas_treeview.insert("", "end", values=values)
 
     def search_personas(self):
-        dni = self.search_entry.get()
-        if dni:
-            self.mycursor.execute("SELECT * FROM persona WHERE dni = %s", (dni,))  
-            personas = self.mycursor.fetchall()
-            self.personas_treeview.delete(*self.personas_treeview.get_children())  
-            for persona in personas:
-                values = (persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7], persona[8])
-                self.personas_treeview.insert("", "end", values=values)
+     dni = self.search_entry.get().strip()  # Obtener el valor del Entry y quitar espacios
+     if dni:  # Si el campo de búsqueda no está vacío
+        # Ejecuta la búsqueda por DNI
+        self.mycursor.execute("SELECT * FROM persona WHERE dni = %s", (dni,))
+        personas = self.mycursor.fetchall()
+     else:
+        # Si está vacío, cargar todas las personas
+        self.mycursor.execute("SELECT * FROM persona WHERE activo = 'si'")
+        personas = self.mycursor.fetchall()
+
+    # Actualizar el Treeview con los resultados obtenidos
+     self.personas_treeview.delete(*self.personas_treeview.get_children())
+     for persona in personas:
+        values = (persona[3], persona[1], persona[2], persona[4], persona[9], persona[5], persona[6], persona[7])
+        self.personas_treeview.insert("", "end", values=values)
 
     def modificar_persona(self):
         selected_item = self.personas_treeview.selection()  # Obtiene el item seleccionado
@@ -153,12 +160,18 @@ class ModificarPersona:
         # Crear la ventana de modificación
         self.window = tk.Toplevel(parent.master)
         self.window.title("Modificar Persona")
-        self.window.geometry("400x400")
+        self.window.geometry("400x500")
+        self.window.resizable(False,False)
         self.window.configure(bg="#008B8B")
 
         self.create_widgets()
 
     def create_widgets(self):
+
+        tk.Label(self.window, text="Dni:", bg="#008B8B").pack(pady=5)
+        self.dni_entry = tk.Entry(self.window)
+        self.dni_entry.insert(0, self.persona[3])  # Cargar el nombre actual
+        self.dni_entry.pack(pady=5)
         
         tk.Label(self.window, text="Nombre:", bg="#008B8B").pack(pady=5)
         self.nombre_entry = tk.Entry(self.window)
@@ -192,19 +205,20 @@ class ModificarPersona:
 
     def modificar_persona(self):
         # Recoge los datos de las entradas
-        nuevo_nombre = self.nombre_entry.get()
-        nuevo_apellido = self.apellido_entry.get()
+        nuevo_dni=self.dni_entry.get()
+        nuevo_nombre = self.nombre_entry.get().upper()
+        nuevo_apellido = self.apellido_entry.get().upper()
         nuevo_contacto = self.contacto_entry.get()
-        nuevo_correo = self.correo_entry.get()
+        nuevo_correo = self.correo_entry.get().upper()
         
         nuevo_activo = "sí"
 
         # Actualizar en la base de datos
         self.parent.mycursor.fetchall() 
         self.parent.mycursor.execute("""
-            UPDATE persona SET nombre = %s, apellido = %s, contacto = %s, correo = %s , activo=%s
+            UPDATE persona SET nombre = %s, apellido = %s, dni=%s ,contacto = %s, correo = %s , activo=%s
             WHERE dni = %s
-        """, (nuevo_nombre, nuevo_apellido, nuevo_contacto, nuevo_correo,nuevo_activo, self.persona[3]))  # Usar el DNI para identificar a la persona
+        """, (nuevo_nombre, nuevo_apellido,nuevo_dni, nuevo_contacto, nuevo_correo,nuevo_activo, self.persona[3]))  # Usar el DNI para identificar a la persona
         self.parent.mydb.commit()
 
         messagebox.showinfo("Éxito", "Persona modificada con éxito.")
@@ -214,4 +228,5 @@ class ModificarPersona:
 if __name__ == "__main__":
     root = tk.Tk()
     app = ViewPersonas(master=root)
+    root.title("Consulta Persona")
     app.mainloop()
