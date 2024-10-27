@@ -74,13 +74,14 @@ class VerServicios(tk.Frame):
             self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
 
     def buscar_servicios(self):
-        nombre = self.entrada_busqueda.get()
-        if nombre:
+        nombre = self.entrada_busqueda.get().upper()  # Normalizar a mayúsculas
+               if nombre:
             self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nombre,))
             servicios = self.mycursor.fetchall()
             self.treeview_servicios.delete(*self.treeview_servicios.get_children())
             for servicio in servicios:
                 self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
+            self.entrada_busqueda.delete(0, tk.END)  # Limpiar el campo de búsqueda
 
     def eliminar_servicio(self):
         item_seleccionado = self.treeview_servicios.selection()
@@ -112,6 +113,7 @@ class VerServicios(tk.Frame):
         ventana_modificar.title("Modificar Servicio")
         ventana_modificar.geometry("400x300")
         ventana_modificar.configure(bg="#40E0D0")
+        ventana_modificar.protocol("WM_DELETE_WINDOW", lambda: None)  # Deshabilitar el botón de cerrar
 
         tk.Label(ventana_modificar, text="Nombre:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
         entrada_nombre = tk.Entry(ventana_modificar, font=('Calibri', 12))
@@ -129,9 +131,14 @@ class VerServicios(tk.Frame):
         entrada_tiempo.pack(pady=10)
 
         def guardar_cambios():
-            nuevo_nombre = entrada_nombre.get()
+            nuevo_nombre = entrada_nombre.get().upper()  # Normalizar a mayúsculas
             nueva_descripcion = entrada_descripcion.get()
             nuevo_tiempo = entrada_tiempo.get()
+
+            # Validar que no existan campos vacíos
+            if not nuevo_nombre or not nueva_descripcion or not nuevo_tiempo:
+                messagebox.showwarning("Advertencia", "Todos los campos deben ser llenados.")
+                return
 
             # Validar que no exista un servicio con el mismo nombre
             self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,))
@@ -153,8 +160,9 @@ class VerServicios(tk.Frame):
     def abrir_alta(self):
         ventana_alta = tk.Toplevel(self)
         ventana_alta.title("Agregar Servicio")
-        ventana_alta.geometry("400x400")  # Ajustar el tamaño
-        ventana_alta.configure(bg="#40E0D0")  # Cambiar color de fondo
+        ventana_alta.geometry("400x300")
+        ventana_alta.configure(bg="#40E0D0")
+        ventana_alta.protocol("WM_DELETE_WINDOW", lambda: None)  # Deshabilitar el botón de cerrar
 
         tk.Label(ventana_alta, text="Nombre:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
         entrada_nombre = tk.Entry(ventana_alta, font=('Calibri', 12))
@@ -169,9 +177,14 @@ class VerServicios(tk.Frame):
         entrada_tiempo.pack(pady=10)
 
         def guardar_servicio():
-            nombre = entrada_nombre.get()
+            nombre = entrada_nombre.get().upper()  # Normalizar a mayúsculas
             descripcion = entrada_descripcion.get()
             tiempo_estimado = entrada_tiempo.get()
+
+            # Validar que no existan campos vacíos
+            if not nombre or not descripcion or not tiempo_estimado:
+                messagebox.showwarning("Advertencia", "Todos los campos deben ser llenados.")
+                return
 
             # Validar que no exista un servicio con el mismo nombre
             self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nombre,))
@@ -197,7 +210,5 @@ class VerServicios(tk.Frame):
 # Crear la ventana principal
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Ver Servicios")
-    root.geometry("1280x720")
     app = VerServicios(master=root)
     app.mainloop()

@@ -8,7 +8,7 @@ class ViewPersonas(tk.Frame):
         self.master = master
         self.grid_propagate(False)  # Evita que el frame cambie de tamaño
         self.grid(row=0, column=0, sticky="nsew")
-        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -18,8 +18,8 @@ class ViewPersonas(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # Cambia esto por tu usuario
-            password="",  # Cambia esto por tu contraseña
-            database="base_peluquerias"  # Cambia esto por tu base de datos
+            password="123",  # Cambia esto por tu contraseña
+            database="base_peluqueria"  # Cambia esto por tu base de datos
         )
         self.mycursor = self.mydb.cursor()
 
