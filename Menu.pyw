@@ -3,6 +3,7 @@ from tkinter import PhotoImage, Toplevel
 from viewpersonas import ViewPersonas  # Importamos la clase ViewPersonas
 from viewserviciosSEGUNDO import VerServicios
 from alta_turnos import iniciar_turnero
+from view_productos import ListadoProductos
 
 class Menu(tk.Tk):
     def __init__(self):
@@ -41,9 +42,8 @@ class Menu(tk.Tk):
         
 
     def stock(self):
-        ventana_stock = Toplevel(self)
-        ventana_stock.title("Stock")
-        # Aquí puedes agregar contenido a la ventana de stock
+        self.withdraw()
+        ListadoProductos(self)
 
     def servicios(self):
         ventana_servicios = Toplevel(self)

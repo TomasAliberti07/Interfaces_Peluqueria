@@ -1,59 +1,67 @@
 import mysql.connector
-
 import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, messagebox
-from tkinter import PhotoImage
 from conexionbd import conectar_db
 
-
-
 # Ventana
-class AltaProducto(tk.Tk):
-    def __init__(self):
-        super().__init__()
+class AltaProducto(tk.Toplevel):
+    def __init__(self, master=None):
+        super().__init__(master)
         self.title("Alta de producto") 
-        self.geometry("1110x510")
+        self.geometry("700x310")
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        ruta_imagen = 'C:/Users/ramye/Desktop/Facultad/Programación 2do año/Interfaces_Peluqueria/imagen3.png'
-        self.imagen = PhotoImage(file=ruta_imagen)
         
-        self.label_imagen = tk.Label(self, image=self.imagen,bg=self.cget('bg'))
-        self.label_imagen.grid(row=2, column=4, rowspan=3, padx=20, pady=10)
         # Marco
         frame_datos = LabelFrame(self, text="Ingrese los datos:", bg="#48D1CC", font=('Calibri', 20), borderwidth=5)
-        frame_datos.grid(row=1, column=0, columnspan=9,  ipady=10)
+        frame_datos.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        # Etiquetas
+        # Etiquetas y campos de entrada
         label_nombre = tk.Label(frame_datos, text="Nombre: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
-        label_nombre.grid(row=1, column=1, pady=10)
+        label_nombre.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        self.entry_nombre = tk.Entry(frame_datos)
+        self.entry_nombre.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
         label_marca = tk.Label(frame_datos, text="Marca: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
-        label_marca.grid(row=2, column=1, pady=10)
+        label_marca.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        self.entry_marca = tk.Entry(frame_datos)
+        self.entry_marca.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
 
         label_cantidad = tk.Label(frame_datos, text="Cantidad: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
-        label_cantidad.grid(row=3, column=1, pady=10)
+        label_cantidad.grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        self.entry_cantidad = tk.Entry(frame_datos)
+        self.entry_cantidad.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
 
         label_precio = tk.Label(frame_datos, text="Precio: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
-        label_precio.grid(row=4, column=1, pady=10)
+        label_precio.grid(row=3, column=0, padx=10, pady=5, sticky="w")
+        self.entry_precio = tk.Entry(frame_datos)
+        self.entry_precio.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
 
-        # Entradas
-        self.entry_nombre = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        self.entry_nombre.grid(row=1, column=2, ipadx=400)
+        # Configurar la expansión de las columnas
+        frame_datos.grid_columnconfigure(1, weight=1)
 
-        self.entry_marca = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        self.entry_marca.grid(row=2, column=2, ipadx=400)
+        # Botones
+        frame_botones = tk.Frame(self, bg="#40E0D0")
+        frame_botones.grid(row=1, column=0, pady=10, sticky="ew")
 
-        self.entry_cantidad = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        self.entry_cantidad.grid(row=3, column=2, ipadx=400)
+        frame_botones.grid_columnconfigure(0, weight=1)
+        frame_botones.grid_columnconfigure(1, weight=1)
+        frame_botones.grid_columnconfigure(2, weight=1)
+        frame_botones.grid_columnconfigure(3, weight=1)
 
-        self.entry_precio = Entry(frame_datos, bg="white", font=('Calibri', 15))
-        self.entry_precio.grid(row=4, column=2, ipadx=400)
+        boton_guardar = tk.Button(frame_botones, text="Guardar",font=('calibri',15), command=self.guardar_datos)
+        boton_guardar.grid(row=0, column=1, padx=5)
 
+        boton_limpiar = tk.Button(frame_botones, text="Limpiar",font=('calibri',15),command=self.limpiar_campos)
+        boton_limpiar.grid(row=0, column=2, padx=5)
 
-        # Botón de Envío
-        btn_guardar = Button(frame_datos, text="Guardar", command=self.guardar_datos, bg="green", font=('Calibri', 15))
-        btn_guardar.grid(row=9, column=1, columnspan=2, pady=20)
+        boton_volver = tk.Button(frame_botones, text="Volver",font=('calibri',15), command=self.destroy)
+        boton_volver.grid(row=0, column=3, padx=5,sticky="e")
+
+        # Configurar la expansión de las columnas
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
     def validar_campos(self):
         nombre = self.entry_nombre.get()
         marca = self.entry_marca.get()
@@ -66,7 +74,7 @@ class AltaProducto(tk.Tk):
         if not cantidad.isdigit():
             messagebox.showerror("Error", "La cantidad debe ser un número entero")
             return False
-        if not precio.replace('.','',1).isdigit():
+        if not precio.replace('.', '', 1).isdigit():
             messagebox.showerror("Error", "El precio debe ser un número")
             return False
         return True
@@ -81,9 +89,9 @@ class AltaProducto(tk.Tk):
         if not self.validar_campos():
             return
 
-        cnx,cursor = conectar_db()
+        cnx, cursor = conectar_db()
         if cnx is None or cursor is None:
-            messagebox.showerror("Error al conectar a la base de datos")
+            messagebox.showerror("Error", "Error al conectar a la base de datos")
             return
         nombre = self.entry_nombre.get()
         marca = self.entry_marca.get()
@@ -95,17 +103,17 @@ class AltaProducto(tk.Tk):
         try:
             cursor.execute(query, valores)
             cnx.commit()
-            messagebox.showinfo("Éxito datos guardados", "Datos guardados")
-            print("Datos guardados")
+            messagebox.showinfo("Éxito", "Datos guardados")
             self.limpiar_campos()
-        except mysql.connector.Error as e:
-            messagebox.showerror("Error al guardar los datos", f"Error: {e}")
-        finally:        
+        except mysql.connector.Error as err:
+            messagebox.showerror("Error", f"Error al guardar los datos: {err}")
+        finally:
             cursor.close()
-            cnx.close()    
-       
-
+            cnx.close()
+'''
+# Ejemplo de cómo inicializar la ventana de alta de producto
 if __name__ == "__main__":
-    app = AltaProducto()
-    app.mainloop()
-
+    root = tk.Tk()
+    app = AltaProducto(root)
+    root.mainloop()
+'''

@@ -13,8 +13,8 @@ class VerServicios(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="",
-            database="base_peluquerias"
+            password="123",
+            database="base_peluqueria"
         )
         self.mycursor = self.mydb.cursor()
 
