@@ -35,35 +35,52 @@ class Sesion(tk.Tk):
         
         self.boton = tk.Button(self, text="Ingresar", command=self.verificar_sesion, font=("Calibri", 12))
         self.boton.grid(row=2, column=1, padx=10, pady=1)
-        self.conn = mysql.connector.connect(
-            user='root',
-            password='123',  # Reemplaza 'tu_contraseña' con la contraseña real
-            host='localhost',
-            database='base_peluqueria'
+
+    def conectar_db(self):  # Agregado self
+        try:
+            mydb = mysql.connector.connect(
+                host="localhost",
+                user="root",  # PONER SU PROPIO USUARIO
+                password="123",  # PONER SU PROPIA CLAVE
+                database="base_peluqueria"
             )
-    
-
+            cursor = mydb.cursor()
+            return mydb, cursor
+        except mysql.connector.Error as err:
+            print(f"Error de conexión: {err}")
+            return None
+            
     def verificar_sesion(self):
-        mydb = conectar_db()
-        if mydb is None:
-            messagebox.showerror("Error", "No se pudo conectar a la base de datos")
-            return
+        try:
+            # Obtener la conexión y el cursor
+            conexion = self.conectar_db()
 
-        cursor = mydb.cursor()
-        usuario_ingresado = self.mostrador_usuario.get()
-        contraseña_ingresada = self.mostrador_contraseña.get()
+            if conexion is None:
+                print("No se pudo conectar a la base de datos.")
+                return
 
-        query = "SELECT * FROM usuarios WHERE nombre_usuario = %s AND contraseña = %s"
-        cursor.execute(query, (usuario_ingresado, contraseña_ingresada))
+            mydb, cursor = conexion
 
-        if cursor.fetchone():
-            messagebox.showinfo("Éxito", "Inicio de sesión exitoso")
-            self.abrir_menu_principal()
-        else:
-            messagebox.showerror("Error", "Usuario o contraseña incorrectos")
+            # Obtener los datos de inicio de sesión
+            nombre_usuario = self.mostrador_usuario.get()
+            contraseña = self.mostrador_contraseña.get()
+            print(f"Intentando iniciar sesión con usuario: {nombre_usuario}")
 
-        cursor.close()
-        mydb.close()
+            if isinstance(mydb, mysql.connector.MySQLConnection):
+                cursor.execute("SELECT * FROM usuarios WHERE nombre_usuario = %s AND contraseña = %s", (nombre_usuario, contraseña))
+                result = cursor.fetchone()
+
+                if result:
+                    print("Inicio de sesión exitoso")
+                    self.abrir_menu_principal()
+                else:
+                    print("Credenciales incorrectas")
+                    messagebox.showerror("Error", "Credenciales incorrectas")
+
+            cursor.close()
+            mydb.close()
+        except Exception as e:
+            print(f"Ocurrió un error: {e}")
 
     def abrir_menu_principal(self):
         self.destroy()  # Cierra la ventana de inicio de sesión
