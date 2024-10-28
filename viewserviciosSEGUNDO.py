@@ -13,8 +13,8 @@ class VerServicios(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="123",
-            database="base_peluqueria"
+            password="",
+            database="base_peluquerias"
         )
         self.mycursor = self.mydb.cursor()
 
@@ -23,7 +23,7 @@ class VerServicios(tk.Frame):
     def crear_widgets(self):
         # Frame de búsqueda
         marco_busqueda = tk.LabelFrame(self, text="Buscar por nombre", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
-        marco_busqueda.grid(row=0, column=0, padx=10, pady=20, sticky="nsew")
+        marco_busqueda.grid(row=0, column=0, padx=80, pady=20, sticky="nsew")
 
         # Entrada de búsqueda
         self.entrada_busqueda = tk.Entry(marco_busqueda, width=20, font=('Calibri', 15))
@@ -74,15 +74,19 @@ class VerServicios(tk.Frame):
             self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
 
     def buscar_servicios(self):
-        nombre = self.entrada_busqueda.get().upper()  # Normalizar a mayúsculas
-               if nombre:
-            self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nombre,))
-            servicios = self.mycursor.fetchall()
-            self.treeview_servicios.delete(*self.treeview_servicios.get_children())
-            for servicio in servicios:
-                self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
-            self.entrada_busqueda.delete(0, tk.END)  # Limpiar el campo de búsqueda
-
+     nombre = self.entrada_busqueda.get().upper()  # Normalizar a mayúsculas
+     if nombre:
+        # Cambiar la consulta para usar LIKE y buscar por el prefijo
+        self.mycursor.execute("SELECT * FROM servicio WHERE nombre LIKE %s", (nombre + '%',))
+        servicios = self.mycursor.fetchall()
+        self.treeview_servicios.delete(*self.treeview_servicios.get_children())
+    
+        for servicio in servicios:
+            self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
+        self.entrada_busqueda.delete(0, tk.END)  # Limpiar el campo de búsqueda
+     else:
+        # Si el campo de búsqueda está vacío, recargar todos los servicios
+        self.cargar_servicios()
     def eliminar_servicio(self):
         item_seleccionado = self.treeview_servicios.selection()
         if item_seleccionado:
@@ -104,64 +108,72 @@ class VerServicios(tk.Frame):
             messagebox.showwarning("Advertencia", "Por favor, selecciona un servicio para modificar.")
 
     def abrir_dialogo_modificar(self, servicio_nombre):
-        # Obtener los detalles del servicio seleccionado
-        self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (servicio_nombre,))
-        servicio = self.mycursor.fetchone()
+    # Obtener los detalles del servicio seleccionado
+     self.mycursor.reset()
+     self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (servicio_nombre,))
+     servicio = self.mycursor.fetchone()
 
-        # Crear una nueva ventana para modificar el servicio
-        ventana_modificar = tk.Toplevel(self)
-        ventana_modificar.title("Modificar Servicio")
-        ventana_modificar.geometry("400x300")
-        ventana_modificar.configure(bg="#40E0D0")
-        ventana_modificar.protocol("WM_DELETE_WINDOW", lambda: None)  # Deshabilitar el botón de cerrar
+    # Crear una nueva ventana para modificar el servicio
+     ventana_modificar = tk.Toplevel(self)
+     ventana_modificar.title("Modificar Servicio")
+     ventana_modificar.geometry("400x500")
+     ventana_modificar.configure(bg="#40E0D0")
+     
+     ventana_modificar.protocol("WM_DELETE_WINDOW", lambda: None)  # Deshabilitar el botón de cerrar
 
-        tk.Label(ventana_modificar, text="Nombre:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
-        entrada_nombre = tk.Entry(ventana_modificar, font=('Calibri', 12))
-        entrada_nombre.insert(0, servicio[3])  # nombre
-        entrada_nombre.pack(pady=10)
+     tk.Label(ventana_modificar, text="Nombre:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
+     entrada_nombre = tk.Entry(ventana_modificar, font=('Calibri', 12))
+     entrada_nombre.insert(0, servicio[3])  # nombre
+     entrada_nombre.pack(pady=10)
 
-        tk.Label(ventana_modificar, text="Descripción:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
-        entrada_descripcion = tk.Entry(ventana_modificar, font=('Calibri', 12))
-        entrada_descripcion.insert(0, servicio[1])  # descripción
-        entrada_descripcion.pack(pady=10)
+     tk.Label(ventana_modificar, text="Descripción:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
+     entrada_descripcion = tk.Text(ventana_modificar, font=('Calibri', 12), height=5, width=40)  # Especificar el ancho
+     entrada_descripcion.insert(tk.END, servicio[1])  # descripción
+     entrada_descripcion.pack(pady=10, padx=10)  # Agregar padding horizontal
 
-        tk.Label(ventana_modificar, text="Tiempo Estimado:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
-        entrada_tiempo = tk.Entry(ventana_modificar, font=('Calibri', 12))
-        entrada_tiempo.insert(0, servicio[2])  # tiempo estimado
-        entrada_tiempo.pack(pady=10)
+     tk.Label(ventana_modificar, text="Tiempo Estimado:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
+     entrada_tiempo = tk.Entry(ventana_modificar, font=('Calibri', 12))
+     entrada_tiempo.insert(0, servicio[2])  # tiempo estimado
+     entrada_tiempo.pack(pady=10)
 
-        def guardar_cambios():
-            nuevo_nombre = entrada_nombre.get().upper()  # Normalizar a mayúsculas
-            nueva_descripcion = entrada_descripcion.get()
-            nuevo_tiempo = entrada_tiempo.get()
+     def guardar_cambios():
+        nuevo_nombre = entrada_nombre.get().upper()  # Normalizar a mayúsculas
+        nueva_descripcion = entrada_descripcion.get("1.0", tk.END).strip().upper()  # Obtener texto del campo de texto
+        nuevo_tiempo = entrada_tiempo.get()
 
-            # Validar que no existan campos vacíos
-            if not nuevo_nombre or not nueva_descripcion or not nuevo_tiempo:
-                messagebox.showwarning("Advertencia", "Todos los campos deben ser llenados.")
-                return
+        # Validar que no existan campos vacíos
+        if not nuevo_nombre or not nueva_descripcion or not nuevo_tiempo:
+            messagebox.showwarning("Advertencia", "Todos los campos deben ser llenados.")
+            return
 
-            # Validar que no exista un servicio con el mismo nombre
-            self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,))
-            if self.mycursor.fetchone() and nuevo_nombre != servicio[3]:
-                messagebox.showwarning("Advertencia", "El servicio ya existe con ese nombre.")
-                return
+        # Validar que no exista un servicio con el mismo nombre
+        self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,))
+        if self.mycursor.fetchone() and nuevo_nombre != servicio[3]:
+            messagebox.showwarning("Advertencia", "El servicio ya existe con ese nombre.")
+            return
 
-            # Actualizar el servicio en la base de datos
-            self.mycursor.execute("UPDATE servicio SET nombre = %s, descripcion = %s, tiempo_estimado = %s WHERE nombre = %s",
-                                  (nuevo_nombre, nueva_descripcion, nuevo_tiempo, servicio[3]))
-            self.mydb.commit()
-            ventana_modificar.destroy()
-            self.cargar_servicios()
-            messagebox.showinfo("Éxito", "Servicio modificado correctamente.")
-
-        boton_guardar = tk.Button(ventana_modificar, text="Guardar Cambios", command=guardar_cambios)
-        boton_guardar.pack(pady=20)
-
+        # Actualizar el servicio en la base de datos
+        self.mycursor.execute("UPDATE servicio SET nombre = %s, descripcion = %s, tiempo_estimado = %s WHERE nombre = %s",
+                              (nuevo_nombre, nueva_descripcion, nuevo_tiempo, servicio[3]))
+        self.mydb.commit()
+        ventana_modificar.destroy()
+        self.cargar_servicios()
+        messagebox.showinfo("Éxito", "Servicio modificado correctamente.")
+     def volver():
+        ventana_modificar.destroy()
+         
+     boton_guardar = tk.Button(ventana_modificar, text="Guardar Cambios", command=guardar_cambios)
+     boton_guardar.pack(pady=20)
+     boton_volver = tk.Button(ventana_modificar, text="Volver", command=volver)
+     boton_volver.pack( pady=20)
+     
+         
     def abrir_alta(self):
         ventana_alta = tk.Toplevel(self)
         ventana_alta.title("Agregar Servicio")
-        ventana_alta.geometry("400x300")
+        ventana_alta.geometry("400x500")
         ventana_alta.configure(bg="#40E0D0")
+        ventana_alta.resizable(False,False)
         ventana_alta.protocol("WM_DELETE_WINDOW", lambda: None)  # Deshabilitar el botón de cerrar
 
         tk.Label(ventana_alta, text="Nombre:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
@@ -169,7 +181,7 @@ class VerServicios(tk.Frame):
         entrada_nombre.pack(pady=10)
 
         tk.Label(ventana_alta, text="Descripción:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
-        entrada_descripcion = tk.Entry(ventana_alta, font=('Calibri', 12))
+        entrada_descripcion = tk.Text(ventana_alta,font=('Calibri', 12), height=5, width=40)
         entrada_descripcion.pack(pady=10)
 
         tk.Label(ventana_alta, text="Tiempo Estimado:", font=('Calibri', 12), bg="#40E0D0").pack(pady=10)
@@ -178,7 +190,7 @@ class VerServicios(tk.Frame):
 
         def guardar_servicio():
             nombre = entrada_nombre.get().upper()  # Normalizar a mayúsculas
-            descripcion = entrada_descripcion.get()
+            descripcion = entrada_descripcion.get("1.0", tk.END).strip().upper()
             tiempo_estimado = entrada_tiempo.get()
 
             # Validar que no existan campos vacíos
@@ -199,16 +211,23 @@ class VerServicios(tk.Frame):
             ventana_alta.destroy()
             self.cargar_servicios()
             messagebox.showinfo("Éxito", "Servicio agregado correctamente.")
+        def volver():
+            ventana_alta.destroy()
 
         boton_guardar = tk.Button(ventana_alta, text="Guardar Servicio", command=guardar_servicio)
         boton_guardar.pack(pady=20)
+        boton_volver = tk.Button(ventana_alta, text="Volver", command=volver)
+        boton_volver.pack( pady=20)
+     
 
     def volver_menu(self):
-        # Implementar la lógica para volver al menú principal
-        pass
+       self.mycursor.close()
+       self.mydb.close()
+       self.master.destroy() 
 
-# Crear la ventana principal
 if __name__ == "__main__":
     root = tk.Tk()
+    root.geometry("800x550")
+    root.protocol("WM_DELETE_WINDOW", lambda: None) 
     app = VerServicios(master=root)
     app.mainloop()

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import PhotoImage, Toplevel
 from viewpersonas import ViewPersonas  # Importamos la clase ViewPersonas
+from viewserviciosSEGUNDO import VerServicios
 
 class Menu(tk.Tk):
     def __init__(self):
@@ -11,7 +12,7 @@ class Menu(tk.Tk):
         self.title("Menu")
 
         # Cargar imagen
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
 
         # Etiqueta para mostrar la imagen
@@ -35,10 +36,10 @@ class Menu(tk.Tk):
 
     def personas(self):
         ventana_personas = Toplevel(self)
-        ventana_personas.title("Visualizar Personas")
-        ventana_personas.geometry("1366x768")  # Establecer un tamaño adecuado
+        ventana_personas.title("Visualizar Personas") 
         ventana_personas.resizable(False, False)  # Deshabilitar el redimensionamiento
         ViewPersonas(ventana_personas)  # Crear la instancia de ViewPersonas
+        
 
     def stock(self):
         ventana_stock = Toplevel(self)
@@ -48,7 +49,12 @@ class Menu(tk.Tk):
     def servicios(self):
         ventana_servicios = Toplevel(self)
         ventana_servicios.title("Servicios")
-        # Aquí puedes agregar contenido a la ventana de servicios
+        ventana_servicios.geometry("800x550")
+        ventana_servicios.title("Visualizar Personas") 
+        ventana_servicios.resizable(False, False)  # Deshabilitar el redimensionamiento
+        VerServicios(ventana_servicios) 
+        
+    
 
 if __name__ == "__main__":
     menu = Menu()

@@ -13,7 +13,7 @@ class AltaPersona(tk.Toplevel):
         self.configure(bg="#40E0D0")
         self.actualizar_treeview = actualizar_treeview
         self.resizable(False, False)
-        self.protocol("WM_DELETE_WINDOW", self.bloquear_x)
+        self.protocol("WM_DELETE_WINDOW", lambda: None)
 
       
         
@@ -145,9 +145,7 @@ class AltaPersona(tk.Toplevel):
         self.tipo_combobox.set("") 
         self.activo_var.set("1") 
 
-    def bloquear_x(self):
-       messagebox.showwarning("Advertencia","Para cerrar la pestaña presione 'volver' ")
-
+  
     def volver_consutla(self):
         self.destroy()
 

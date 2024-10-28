@@ -8,7 +8,7 @@ class ViewPersonas(tk.Frame):
         self.master = master
         self.grid_propagate(False)  # Evita que el frame cambie de tamaño
         self.grid(row=0, column=0, sticky="nsew")
-        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        ruta_imagen = 'C:/Users/GUILLERMINA/Desktop/Interfaces_Peluqueria/imagen3.png'
         self.imagen = PhotoImage(file=ruta_imagen)
         
         self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
@@ -18,8 +18,8 @@ class ViewPersonas(tk.Frame):
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",  # Cambia esto por tu usuario
-            password="123",  # Cambia esto por tu contraseña
-            database="base_peluqueria"  # Cambia esto por tu base de datos
+            password="",  # Cambia esto por tu contraseña
+            database="base_peluquerias"  # Cambia esto por tu base de datos
         )
         self.mycursor = self.mydb.cursor()
 
@@ -162,46 +162,52 @@ class ModificarPersona:
         self.window.title("Modificar Persona")
         self.window.geometry("400x500")
         self.window.resizable(False,False)
-        self.window.configure(bg="#008B8B")
+        self.window.configure(bg="#40E0D0")
+        self.window.protocol("WM_DELETE_WINDOW", lambda: None)
 
         self.create_widgets()
-
+    def volver(self):
+           self.window.destroy()
     def create_widgets(self):
 
-        tk.Label(self.window, text="Dni:", bg="#008B8B").pack(pady=5)
+        tk.Label(self.window, text="Dni:", bg="#40E0D0").pack(pady=5)
         self.dni_entry = tk.Entry(self.window)
         self.dni_entry.insert(0, self.persona[3])  # Cargar el nombre actual
         self.dni_entry.pack(pady=5)
         
-        tk.Label(self.window, text="Nombre:", bg="#008B8B").pack(pady=5)
+        tk.Label(self.window, text="Nombre:", bg="#40E0D0").pack(pady=5)
         self.nombre_entry = tk.Entry(self.window)
         self.nombre_entry.insert(0, self.persona[1])  # Cargar el nombre actual
         self.nombre_entry.pack(pady=5)
 
-        tk.Label(self.window, text="Apellido:", bg="#008B8B").pack(pady=5)
+        tk.Label(self.window, text="Apellido:", bg="#40E0D0").pack(pady=5)
         self.apellido_entry = tk.Entry(self.window)
         self.apellido_entry.insert(0, self.persona[2])  # Cargar el apellido actual
         self.apellido_entry.pack(pady=5)
 
-        tk.Label(self.window, text="Contacto:", bg="#008B8B").pack(pady=5)
+        tk.Label(self.window, text="Contacto:", bg="#40E0D0").pack(pady=5)
         self.contacto_entry = tk.Entry(self.window)
         self.contacto_entry.insert(0, self.persona[4])  # Cargar el contacto actual
         self.contacto_entry.pack(pady=5)
 
-        tk.Label(self.window, text="Correo:", bg="#008B8B").pack(pady=5)
+        tk.Label(self.window, text="Correo:", bg="#40E0D0").pack(pady=5)
         self.correo_entry = tk.Entry(self.window)
         self.correo_entry.insert(0, self.persona[9])  # Cargar el correo actual
         self.correo_entry.pack(pady=5)
         
-        tk.Label(self.window, text="Activo:", bg="#008B8B").pack(pady=5)
+        tk.Label(self.window, text="Activo:", bg="#40E0D0").pack(pady=5)
         self.activo_var = tk.StringVar(value="1" if self.persona[7] == 1 else "0")  
-        self.radio_si = tk.Radiobutton(self.window, text="Sí", variable=self.activo_var, value="1", bg="#008B8B")
+        self.radio_si = tk.Radiobutton(self.window, text="Sí", variable=self.activo_var, value="1", bg="#40E0D0")
         self.radio_si.pack(pady=5)
 
         self.activo_var.set("1")  
         # Botón para confirmar modificación
+        
+
         modificar_button = tk.Button(self.window, text="Modificar", command=self.modificar_persona)
         modificar_button.pack(pady=20)
+        volver_button = tk.Button(self.window, text="Volver", command=self.volver)
+        volver_button.pack(pady=20)
 
     def modificar_persona(self):
         # Recoge los datos de las entradas
@@ -229,4 +235,5 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ViewPersonas(master=root)
     root.title("Consulta Persona")
+    root.protocol("WM_DELETE_WINDOW", lambda: None) 
     app.mainloop()
