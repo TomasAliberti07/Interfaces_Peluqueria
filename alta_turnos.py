@@ -104,11 +104,33 @@ def iniciar_turnero(menu_ventana):
             messagebox.showinfo("Éxito", "Turno eliminado correctamente")
             mostrar_turnos()
             turno_id = None
+    def validar_hora(texto):
+        # Permite ingresar en formato HH:MM o valores parciales mientras se escribe
+        if len(texto) == 5 and texto[2] == ":":
+            try:
+                horas = int(texto[:2])
+                minutos = int(texto[3:])
+                if 0 <= horas <= 23 and 0 <= minutos <= 59:
+                    return True
+            except ValueError:
+                return False
+        elif len(texto) < 5:
+            return True  # Permitir texto parcial mientras se escribe
+        return False
+
+    def actualizar_hora(*args):
+        hora = entry_hora_var.get()
+        # Inserta ":" en la posición correcta si el usuario ha ingresado dos dígitos
+        if len(hora) == 2 and ":" not in hora:
+            entry_hora_var.set(hora + ":")
+        elif len(hora) > 5:
+            entry_hora_var.set(hora[:5])
+        
 
 # Configuración de la ventana principal
     root = tk.Toplevel(menu_ventana)
     root.attributes("-fullscreen", True)  # Establece la ventana en pantalla completa
-    root.title("Sistema de Turnos de Peluquería")
+    root.title("GESTOR DE TURNOS")
     root.configure(background='#008B8B')
 
     # Diseño ajustable
@@ -124,7 +146,7 @@ def iniciar_turnero(menu_ventana):
     frame_cal = tk.Frame(frame_left, bg='#66CCCC', height=int(root.winfo_screenheight() * 0.6))
     frame_cal.pack(pady=5, fill="both", expand=True)
 
-    label_fecha = tk.Label(frame_cal, text="Fecha:", bg='#66CCCC', font=("Arial", 14))
+    label_fecha = tk.Label(frame_cal, text="FECHA:", bg='#66CCCC', font=("Arial", 14))
     label_fecha.pack()
 
     cal = Calendar(frame_cal, date_pattern='y-mm-dd', background='#66CCCC', foreground='black', borderwidth=1)
@@ -149,24 +171,29 @@ def iniciar_turnero(menu_ventana):
     except Exception as e:
         messagebox.showerror("Error", f"No se pudo cargar el logo: {e}")
      # Botón de mostrar todos los turnos
-    button_mostrar_todos = tk.Button(frame_left, text="Mostrar Todos los Turnos", command=mostrar_turnos, bg='#F7F7F7', font=("Arial", 12))
+    button_mostrar_todos = tk.Button(frame_left, text="MOSTRAR TODOS LOS TURNOS", command=mostrar_turnos, bg='#F7F7F7', font=("Arial", 12))
     button_mostrar_todos.pack(pady=10, fill="x")  # Ajuste el espacio y tamaño del botón
     # Ajusta el botón de filtro y demás elementos más cerca del calendario y con un tamaño mayor
-    button_filtrar = tk.Button(frame_left, text="Filtrar Turnos por Fecha", command=filtrar_por_fecha, bg='#F7F7F7', font=("Arial", 12))
+    button_filtrar = tk.Button(frame_left, text="FILTRAR TURNOS POR FECHA", command=filtrar_por_fecha, bg='#F7F7F7', font=("Arial", 12))
     button_filtrar.pack(pady=(5, 5), fill="x")  # Reduce el padding superior
-
-    label_hora = tk.Label(frame_left, text="Hora (HH:MM):", bg='#66CCCC', font=("Arial", 12))
+    
+    label_hora = tk.Label(frame_left, text="HORA (HH:MM):", bg='#66CCCC', font=("Arial", 12))
     label_hora.pack(pady=(5, 2))  # Espaciado reducido
-    entry_hora = tk.Entry(frame_left, font=("Arial", 12))
-    entry_hora.insert(0, "HH:MM")
-    entry_hora.pack(pady=2, fill="x")  # Ajuste para reducir el espacio
+    # Campo de hora sin valor predeterminado
+    entry_hora_var = tk.StringVar()
+    entry_hora_var.trace("w", actualizar_hora)
+    entry_hora = tk.Entry(frame_left, font=("Arial", 12), textvariable=entry_hora_var)
+    entry_hora.pack(pady=2, fill="x")
 
-    label_cliente = tk.Label(frame_left, text="Nombre del Cliente:", bg='#66CCCC', font=("Arial", 12))
+    # Configura la validación después de crear el campo
+    validacion_hora = root.register(validar_hora)
+    entry_hora.config(validate="key", validatecommand=(validacion_hora, '%P'))
+    label_cliente = tk.Label(frame_left, text="NOMBRE DEL CLIENTE:", bg='#66CCCC', font=("Arial", 12))
     label_cliente.pack(pady=(5, 2))
     entry_cliente = tk.Entry(frame_left, font=("Arial", 12))
     entry_cliente.pack(pady=2, fill="x")
 
-    label_servicio = tk.Label(frame_left, text="Servicio:", bg='#66CCCC', font=("Arial", 12))
+    label_servicio = tk.Label(frame_left, text="SERVICIO:", bg='#66CCCC', font=("Arial", 12))
     label_servicio.pack(pady=(5, 2))
     combo_servicio = ttk.Combobox(frame_left, font=("Arial", 12))
     combo_servicio.pack(pady=2, fill="x")
@@ -179,15 +206,15 @@ def iniciar_turnero(menu_ventana):
     frame_right = tk.Frame(root, bg='#66CCCC')
     frame_right.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
-    label_turnos = tk.Label(frame_right, text="Turnos Registrados", font=("Arial", 20), bg='#66CCCC')
+    label_turnos = tk.Label(frame_right, text="TURNOS REGISTRADOS", font=("Arial", 20), bg='#66CCCC')
     label_turnos.pack(pady=5)
 
     columns = ("Fecha", "Hora", "Nombre Cliente", "Servicio")
     tree = ttk.Treeview(frame_right, columns=columns, show='headings', selectmode='browse')
-    tree.heading("Fecha", text="Fecha")
-    tree.heading("Hora", text="Hora")
-    tree.heading("Nombre Cliente", text="Nombre Cliente")
-    tree.heading("Servicio", text="Servicio")
+    tree.heading("Fecha", text="FECHA")
+    tree.heading("Hora", text="HORA")
+    tree.heading("Nombre Cliente", text="NOMBRE CLIENTE")
+    tree.heading("Servicio", text="SERVICIO")
     tree.pack(pady=10, fill="both", expand=True)
 
     tree.bind("<<TreeviewSelect>>", cargar_turno_seleccionado)
@@ -196,16 +223,16 @@ def iniciar_turnero(menu_ventana):
     frame_botones = tk.Frame(frame_right, bg='#66CCCC')
     frame_botones.pack(pady=20)
 
-    button_registrar = tk.Button(frame_botones, text="Registrar Turno", command=registrar_turno, bg='#F7F7F7', font=("Arial", 12))
+    button_registrar = tk.Button(frame_botones, text="REGISTRAR TURNO", command=registrar_turno, bg='#F7F7F7', font=("Arial", 12))
     button_registrar.pack(side=tk.LEFT, padx=10)
 
-    button_modificar = tk.Button(frame_botones, text="Modificar Turno", command=modificar_turno, bg='#F7F7F7', font=("Arial", 12))
+    button_modificar = tk.Button(frame_botones, text="MODIFICAR TURNO", command=modificar_turno, bg='#F7F7F7', font=("Arial", 12))
     button_modificar.pack(side=tk.LEFT, padx=10)
 
-    button_eliminar = tk.Button(frame_botones, text="Eliminar Turno", command=eliminar_turno, bg='#F7F7F7', font=("Arial", 12))
+    button_eliminar = tk.Button(frame_botones, text="ELIMINAR TURNO", command=eliminar_turno, bg='#F7F7F7', font=("Arial", 12))
     button_eliminar.pack(side=tk.LEFT, padx=10)
 
-    button_volver = tk.Button(frame_botones, text="Volver", command=root.destroy, bg='#F7F7F7', font=("Arial", 12))
+    button_volver = tk.Button(frame_botones, text="VOLVER", command=root.destroy, bg='#F7F7F7', font=("Arial", 12))
     button_volver.pack(side=tk.LEFT, padx=10)
 
     mostrar_turnos()
