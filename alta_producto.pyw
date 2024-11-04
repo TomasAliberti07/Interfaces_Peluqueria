@@ -63,8 +63,8 @@ class AltaProducto(tk.Toplevel):
         self.grid_rowconfigure(0, weight=1)
 
     def validar_campos(self):
-        nombre = self.entry_nombre.get()
-        marca = self.entry_marca.get()
+        nombre = self.entry_nombre.get().upper()
+        marca = self.entry_marca.get().upper()
         cantidad = self.entry_cantidad.get()
         precio = self.entry_precio.get()
 

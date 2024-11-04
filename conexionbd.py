@@ -9,6 +9,7 @@ def conectar_db():
             database="base_peluqueria"
         )
         cursor = mydb.cursor()
+
         return mydb, cursor
     except mysql.connector.Error as err:
         print(f"Error de conexión: {err}")
@@ -16,17 +17,15 @@ def conectar_db():
 
 
 
-def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p,correo):
-    mydb = conectar_db()
+def insertar_persona(apellido, nombre, dni, contacto, activo, tipo, id_tipo_p, correo):
+    mydb, mycursor = conectar_db()  # Desempaquetamos la tupla en mydb y mycursor
     if mydb is None:
         return  # Si no se pudo conectar, salimos
 
-    mycursor = mydb.cursor()
     try:
-        
-        activo= "Sí" if activo == 1 else "No"
-        sql = "INSERT INTO persona (nombre,apellido , dni, contacto,tipo, activo,id_tipo_p,correo) VALUES (%s, %s, %s, %s, %s,%s,%s,%s)"
-        val = (apellido, nombre, dni, contacto,tipo,activo,id_tipo_p,correo)
+        activo = "Sí" if activo == 1 else "No"
+        sql = "INSERT INTO persona (nombre, apellido, dni, contacto, tipo, activo, id_tipo_p, correo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (apellido, nombre, dni, contacto, tipo, activo, id_tipo_p, correo)
         mycursor.execute(sql, val)
         mydb.commit()
         print("Registro insertado correctamente.")
@@ -35,4 +34,3 @@ def insertar_persona(apellido, nombre, dni, contacto, activo,tipo,id_tipo_p,corr
     finally:
         mycursor.close()
         mydb.close()
-

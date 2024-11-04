@@ -147,7 +147,7 @@ class VerServicios(tk.Frame):
             return
 
         # Validar que no exista un servicio con el mismo nombre
-        self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,))
+        self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,)) 
         if self.mycursor.fetchone() and nuevo_nombre != servicio[3]:
             messagebox.showwarning("Advertencia", "El servicio ya existe con ese nombre.")
             return
