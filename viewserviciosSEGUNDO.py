@@ -1,14 +1,22 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox,PhotoImage
 import mysql.connector
 
 class VerServicios(tk.Frame):
     def __init__(self, master=None):
-        super().__init__(master, bg="#40E0D0", width=1280, height=720)
+        super().__init__(master, bg="#40E0D0")
         self.master = master
         self.grid_propagate(False)
         self.grid(row=0, column=0, sticky="nsew")
+        ruta_imagen = 'C:/Users/lauta/OneDrive/Desktop/Facultad/Interfaces_Peluqueria/imagen3.png'
+        self.imagen = PhotoImage(file=ruta_imagen)
+        self.label_imagen = tk.Label(self, image=self.imagen, bg=self.cget('bg'))
+        self.label_imagen.grid(row=4, column=0, rowspan=3, padx=20, pady=10)
 
+        self.master.attributes('-fullscreen', True)  # Modo pantalla completa
+        self.pack(fill=tk.BOTH, expand=True)
+
+   
         # Conectar a la base de datos y crear un cursor
         self.mydb = mysql.connector.connect(
             host="localhost",
@@ -22,48 +30,62 @@ class VerServicios(tk.Frame):
 
     def crear_widgets(self):
         # Frame de búsqueda
-        marco_busqueda = tk.LabelFrame(self, text="Buscar por nombre", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
-        marco_busqueda.grid(row=0, column=0, padx=80, pady=20, sticky="nsew")
+        marco_busqueda = tk.LabelFrame(self, text="BUSCAR POR NOMBRES", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
+        marco_busqueda.grid(row=0, column=0, padx=400, pady=100, sticky="ew")
 
         # Entrada de búsqueda
         self.entrada_busqueda = tk.Entry(marco_busqueda, width=20, font=('Calibri', 15))
         self.entrada_busqueda.grid(row=0, column=0, padx=10, pady=10)
 
         # Botón de búsqueda
-        boton_buscar = tk.Button(marco_busqueda, text="Buscar", command=self.buscar_servicios, bg="#ffffff", font=('Calibri', 15), width=8)
+        boton_buscar = tk.Button(marco_busqueda, text="BUSCAR", command=self.buscar_servicios, bg="#ffffff", font=('Calibri', 15), width=10)
         boton_buscar.grid(row=0, column=1, padx=10, pady=10)
 
         # Botón de agregar
-        boton_agregar = tk.Button(marco_busqueda, text="+Agregar", command=self.abrir_alta, bg="#ffffff", font=('Calibri', 15), width=8)
+        boton_agregar = tk.Button(marco_busqueda, text="+ AGREGAR", command=self.abrir_alta, bg="#ffffff", font=('Calibri', 15), width=10)
         boton_agregar.grid(row=0, column=2, padx=10, pady=10)
 
         # Botón de eliminar
-        boton_eliminar = tk.Button(marco_busqueda, text="Eliminar", command=self.eliminar_servicio, bg="#ffffff", font=('Calibri', 15), width=8)
-        boton_eliminar.grid(row=0, column=3, padx=10, pady=10)
+        boton_eliminar = tk.Button(marco_busqueda, text="ELIMINAR", command=self.eliminar_servicio, bg="#ffffff", font=('Calibri', 15), width=10)
+        boton_eliminar.grid(row=0, column=4, padx=10, pady=10)
 
         # Botón de modificar
-        boton_modificar = tk.Button(marco_busqueda, text="Modificar", command=self.modificar_servicio, bg="#ffffff", font=('Calibri', 15), width=8)
-        boton_modificar.grid(row=0, column=4, padx=10, pady=10)
+        boton_modificar = tk.Button(marco_busqueda, text="MODIFICAR", command=self.modificar_servicio, bg="#ffffff", font=('Calibri', 15), width=10)
+        boton_modificar.grid(row=0, column=3, padx=10, pady=10)
+        
+        search_button = tk.Button(marco_busqueda, text="ACTUALIZAR", command=self.actualizar_servicio, bg="#ffffff", font=('Calibri', 15), width=10)
+        search_button.grid(row=0, column=5, padx=10, pady=10)
 
         # Treeview de servicios
-        self.treeview_servicios = ttk.Treeview(self, columns=("nombre", "descripcion", "Tiempo Estimado"), show="headings")
-        self.treeview_servicios.grid(row=1, column=0, sticky="nsew", padx=130, pady=10)
+        frame_treeview = tk.Frame(self)
+        frame_treeview.grid(row=1, column=0, sticky="nsew", padx=400, pady=10)
 
-        # Configuración del Treeview
-        self.treeview_servicios.heading("nombre", text="Nombre")
-        self.treeview_servicios.heading("descripcion", text="Descripción")
-        self.treeview_servicios.heading("Tiempo Estimado", text="Tiempo Estimado")
+# Treeview de servicios
+        self.treeview_servicios = ttk.Treeview(frame_treeview, columns=("nombre", "descripcion", "Tiempo Estimado"), show="headings")
+        self.treeview_servicios.grid(row=0, column=0, sticky="nsew")
 
-        # Ancho de las columnas y datos centrados
-        self.treeview_servicios.column("nombre", anchor='center', width=150)
-        self.treeview_servicios.column("descripcion", anchor='center', width=200)
-        self.treeview_servicios.column("Tiempo Estimado", anchor='center', width=100)
+# Configuración del Treeview
+        self.treeview_servicios.heading("nombre", text="NOMBRE")
+        self.treeview_servicios.heading("descripcion", text="DESCRIPCIÓN")
+        self.treeview_servicios.heading("Tiempo Estimado", text="TIEMPO ESTIMADO")
 
-        # Botón Volver
-        boton_volver = tk.Button(self, text="Volver", command=self.volver_menu, bg="#ffffff", font=('Calibri', 15), width=8)
+# Ancho de las columnas y datos centrados
+        self.treeview_servicios.column("nombre", anchor='center', width=330)
+        self.treeview_servicios.column("descripcion", anchor='center', width=350)
+        self.treeview_servicios.column("Tiempo Estimado", anchor='center', width=350)
+
+# Crear un scrollbar      
+        self.scrollbar = tk.Scrollbar(frame_treeview, orient="vertical", command=self.treeview_servicios.yview)   
+        self.scrollbar.grid(row=0, column=1, sticky='ns')  # Colocar el scrollbar a la derecha del Treeview
+
+# Configurar el Treeview para que use el scrollbar
+        self.treeview_servicios.configure(yscrollcommand=self.scrollbar.set)
+
+# Botón Volver
+        boton_volver = tk.Button(self, text="VOLVER", command=self.volver_menu, bg="#ffffff", font=('Calibri', 15), width=10)
         boton_volver.grid(row=2, column=0, padx=10, pady=20)
 
-        # Carga los servicios
+# Carga los servicios
         self.cargar_servicios()
 
     def cargar_servicios(self):
@@ -84,7 +106,15 @@ class VerServicios(tk.Frame):
         for servicio in servicios:
             self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
         self.entrada_busqueda.delete(0, tk.END)  # Limpiar el campo de búsqueda
-     else:
+      
+    def actualizar_servicio(self):
+        self.mycursor.execute("SELECT * FROM servicio ")
+        servicios = self.mycursor.fetchall()
+        self.treeview_servicios.delete(*self.treeview_servicios.get_children())
+    
+        for servicio in servicios:
+            self.treeview_servicios.insert("", "end", values=(servicio[3], servicio[1], servicio[2]))
+        self.entrada_busqueda.delete(0, tk.END)  # 
         # Si el campo de búsqueda está vacío, recargar todos los servicios
         self.cargar_servicios()
     def eliminar_servicio(self):
@@ -147,7 +177,7 @@ class VerServicios(tk.Frame):
             return
 
         # Validar que no exista un servicio con el mismo nombre
-        self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,)) 
+        self.mycursor.execute("SELECT * FROM servicio WHERE nombre = %s", (nuevo_nombre,))
         if self.mycursor.fetchone() and nuevo_nombre != servicio[3]:
             messagebox.showwarning("Advertencia", "El servicio ya existe con ese nombre.")
             return

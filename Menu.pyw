@@ -51,10 +51,11 @@ class Menu(tk.Tk):
         iniciar_turnero(self)  # Pasa la ventana del menú como argument
 
     def personas(self):
+        self.withdraw()  # Oculta la ventana del menú
         ventana_personas = Toplevel(self)
-        ventana_personas.title("Visualizar Personas") 
-        ventana_personas.resizable(False, False)  # Deshabilitar el redimensionamiento
-        ViewPersonas(ventana_personas)  # Crear la instancia de ViewPersonas
+        ventana_personas.title("Visualizar Personas")
+        ventana_personas.resizable(False, False)
+        ViewPersonas(ventana_personas)
 
     def stock(self):
         self.withdraw()

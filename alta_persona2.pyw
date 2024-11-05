@@ -11,6 +11,7 @@ class AltaPersona(tk.Toplevel):
         self.title("Alta de persona") 
         self.geometry("1180x610")
         self.configure(bg="#40E0D0")
+        self.attributes("-fullscreen", True)  
         self.actualizar_treeview = actualizar_treeview
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", lambda: None)
@@ -28,29 +29,29 @@ class AltaPersona(tk.Toplevel):
         }
 
         # Marco
-        frame_datos = LabelFrame(self, text="Ingrese los datos:", bg="#48D1CC", font=('Calibri', 20), borderwidth=5)
-        frame_datos.grid(row=1, column=0, columnspan=9, ipady=10)
+        frame_datos = LabelFrame(self, text="Ingrese los datos:", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
+        frame_datos.grid(row=1, column=0, columnspan=9, padx=80, ipady=10)
 
         # Etiquetas
-        label_nombre = tk.Label(frame_datos, text="Nombre: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_nombre = tk.Label(frame_datos, text="Nombre: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_nombre.grid(row=1, column=1, pady=10)
 
-        label_apellido = tk.Label(frame_datos, text="Apellido: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_apellido = tk.Label(frame_datos, text="Apellido: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_apellido.grid(row=2, column=1, pady=10)
 
-        label_dni = tk.Label(frame_datos, text="DNI: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_dni = tk.Label(frame_datos, text="DNI: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_dni.grid(row=3, column=1, pady=10)
 
-        label_contacto = tk.Label(frame_datos, text="Contacto: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_contacto = tk.Label(frame_datos, text="Contacto: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_contacto.grid(row=4, column=1, pady=10)
 
-        label_correo = tk.Label(frame_datos, text="Correo: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_correo = tk.Label(frame_datos, text="Correo: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_correo.grid(row=5, column=1, pady=10)
         
-        label_tipo = tk.Label(frame_datos, text="Tipo: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_tipo = tk.Label(frame_datos, text="Tipo: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_tipo.grid(row=6, column=1, pady=10)
 
-        label_activo = tk.Label(frame_datos, text="Activo: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_activo = tk.Label(frame_datos, text="Activo: ", bg="#40E0D0", fg="black", font=('Calibri', 15))
         label_activo.grid(row=7, column=1, pady=10)
 
 
@@ -109,10 +110,17 @@ class AltaPersona(tk.Toplevel):
       self.after(2000, lambda: self.btn_guardar.config(state=tk.NORMAL))
 
     # Validaciones
+      if any(self.campo_vacio_o_espacio(campo) for campo in [nombre, apellido, dni, contacto]):
+            messagebox.showwarning("Advertencia", "Por favor, complete todos los campos sin espacios vacíos.")
+            return
+
       if not self.validar_dni(dni):
         self.btn_guardar.config(state=tk.NORMAL)
         return
       if not self.verificar_correo(correo):
+        self.btn_guardar.config(state=tk.NORMAL)
+        return
+      if not self.validar_nombre_apellido(nombre,apellido):
         self.btn_guardar.config(state=tk.NORMAL)
         return
       if not self.validar_telefono(contacto):
@@ -152,6 +160,9 @@ class AltaPersona(tk.Toplevel):
    
             
 #Funciones de validacion
+    def campo_vacio_o_espacio(self, texto):
+        return not texto.strip()
+        
     def verificar_correo(self,correo):
     # Expresión regular para validar el formato del correo electrónico
      patron = r'^[a-zA-ZñÑ0-9._%+-]+@[a-zA-ZñÑ0-9.-]+\.[a-zA-ZñÑ]{2,}$'
@@ -171,6 +182,15 @@ class AltaPersona(tk.Toplevel):
         messagebox.showerror("Error", "El número del dni debe tener 7 u 8 dígitos")
         return   False   
      return True
+    def validar_nombre_apellido(self, nombre, apellido):
+      patron = r'^[A-Za-zñÑáéíóúÁÉÍÓÚ ]+$'  # Permitir letras y espacios
+      if not re.match(patron, nombre):
+        messagebox.showerror("Error", "El nombre debe contener solo letras.")
+        return False
+      if not re.match(patron, apellido):
+        messagebox.showerror("Error", "El apellido debe contener solo letras.")
+        return False
+      return True
 
     def validar_telefono(self,contacto):
       if not contacto.isdigit():  

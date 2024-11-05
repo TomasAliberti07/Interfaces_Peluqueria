@@ -3,41 +3,40 @@ import tkinter as tk
 from tkinter import LabelFrame, Entry, Button, messagebox
 from conexionbd import conectar_db
 
-# Ventana
 class AltaProducto(tk.Toplevel):
     def __init__(self, master=None):
         super().__init__(master)
-        self.title("Alta de producto") 
-        self.geometry("700x310")
+        self.title("Alta de producto")
+        self.attributes('-fullscreen', True)
         self.configure(bg="#40E0D0")
         self.resizable(False, False)
-        
+
         # Marco
-        frame_datos = LabelFrame(self, text="Ingrese los datos:", bg="#48D1CC", font=('Calibri', 20), borderwidth=5)
+        frame_datos = LabelFrame(self, text="Ingrese los datos:", bg="#48D1CC", font=('Calibri', 40), borderwidth=5)
         frame_datos.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         # Etiquetas y campos de entrada
-        label_nombre = tk.Label(frame_datos, text="Nombre: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_nombre = tk.Label(frame_datos, text="Nombre: ", bg="#48D1CC", fg="black", font=('Calibri', 30))
         label_nombre.grid(row=0, column=0, padx=10, pady=5, sticky="w")
-        self.entry_nombre = tk.Entry(frame_datos)
+        self.entry_nombre = tk.Entry(frame_datos, font=('Calibri', 20), width=30) 
         self.entry_nombre.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
-        label_marca = tk.Label(frame_datos, text="Marca: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_marca = tk.Label(frame_datos, text="Marca: ", bg="#48D1CC", fg="black", font=('Calibri', 30))
         label_marca.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        self.entry_marca = tk.Entry(frame_datos)
+        self.entry_marca = tk.Entry(frame_datos, font=('Calibri', 20), width=30) 
         self.entry_marca.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
 
-        label_cantidad = tk.Label(frame_datos, text="Cantidad: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_cantidad = tk.Label(frame_datos, text="Cantidad: ", bg="#48D1CC", fg="black", font=('Calibri', 30))
         label_cantidad.grid(row=2, column=0, padx=10, pady=5, sticky="w")
-        self.entry_cantidad = tk.Entry(frame_datos)
+        self.entry_cantidad = tk.Entry(frame_datos, font=('Calibri', 20), width=30)  
         self.entry_cantidad.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
 
-        label_precio = tk.Label(frame_datos, text="Precio: ", bg="#48D1CC", fg="black", font=('Calibri', 15))
+        label_precio = tk.Label(frame_datos, text="Precio: ", bg="#48D1CC", fg="black", font=('Calibri', 30))
         label_precio.grid(row=3, column=0, padx=10, pady=5, sticky="w")
-        self.entry_precio = tk.Entry(frame_datos)
+        self.entry_precio = tk.Entry(frame_datos, font=('Calibri', 20), width=30)  
         self.entry_precio.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
 
-        # Configurar la expansión de las columnas
+        
         frame_datos.grid_columnconfigure(1, weight=1)
 
         # Botones
@@ -49,22 +48,22 @@ class AltaProducto(tk.Toplevel):
         frame_botones.grid_columnconfigure(2, weight=1)
         frame_botones.grid_columnconfigure(3, weight=1)
 
-        boton_guardar = tk.Button(frame_botones, text="Guardar",font=('calibri',15), command=self.guardar_datos)
+        boton_guardar = tk.Button(frame_botones, text="Guardar", font=('calibri', 20), command=self.guardar_datos, padx=10, pady=5) 
         boton_guardar.grid(row=0, column=1, padx=5)
 
-        boton_limpiar = tk.Button(frame_botones, text="Limpiar",font=('calibri',15),command=self.limpiar_campos)
+        boton_limpiar = tk.Button(frame_botones, text="Limpiar", font=('calibri', 20), command =self.limpiar_campos, padx=10, pady=5) 
         boton_limpiar.grid(row=0, column=2, padx=5)
 
-        boton_volver = tk.Button(frame_botones, text="Volver",font=('calibri',15), command=self.destroy)
-        boton_volver.grid(row=0, column=3, padx=5,sticky="e")
+        boton_volver = tk.Button(frame_botones, text="Volver", font=('calibri', 20), command=self.destroy, padx=10, pady=5)  
+        boton_volver.grid(row=0, column=3, padx=5, sticky="e")
 
-        # Configurar la expansión de las columnas
+        
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
     def validar_campos(self):
-        nombre = self.entry_nombre.get().upper()
-        marca = self.entry_marca.get().upper()
+        nombre = self.entry_nombre.get()
+        marca = self.entry_marca.get()
         cantidad = self.entry_cantidad.get()
         precio = self.entry_precio.get()
 
@@ -93,8 +92,8 @@ class AltaProducto(tk.Toplevel):
         if cnx is None or cursor is None:
             messagebox.showerror("Error", "Error al conectar a la base de datos")
             return
-        nombre = self.entry_nombre.get()
-        marca = self.entry_marca.get()
+        nombre = self.entry_nombre.get().upper()
+        marca = self.entry_marca.get().upper()
         cantidad = self.entry_cantidad.get()
         precio = self.entry_precio.get()
     
@@ -110,10 +109,9 @@ class AltaProducto(tk.Toplevel):
         finally:
             cursor.close()
             cnx.close()
-'''
-# Ejemplo de cómo inicializar la ventana de alta de producto
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = AltaProducto(root)
     root.mainloop()
-'''

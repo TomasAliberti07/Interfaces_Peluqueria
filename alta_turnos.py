@@ -125,7 +125,9 @@ def iniciar_turnero(menu_ventana):
             entry_hora_var.set(hora + ":")
         elif len(hora) > 5:
             entry_hora_var.set(hora[:5])
-        
+    def volver_al_menu():
+        root.destroy()  # Cierra la ventana de turnos
+        menu_ventana.deiconify()  # Muestra nuevamente el menú principal
 
 # Configuración de la ventana principal
     root = tk.Toplevel(menu_ventana)
@@ -232,7 +234,11 @@ def iniciar_turnero(menu_ventana):
     button_eliminar = tk.Button(frame_botones, text="ELIMINAR TURNO", command=eliminar_turno, bg='#F7F7F7', font=("Arial", 12))
     button_eliminar.pack(side=tk.LEFT, padx=10)
 
-    button_volver = tk.Button(frame_botones, text="VOLVER", command=root.destroy, bg='#F7F7F7', font=("Arial", 12))
+    # Oculta el menú cuando se abre la ventana de turnos
+    menu_ventana.withdraw()
+
+    # Botón de volver ahora usa la función `volver_al_menu`
+    button_volver = tk.Button(frame_botones, text="VOLVER", command=volver_al_menu, bg='#F7F7F7', font=("Arial", 12))
     button_volver.pack(side=tk.LEFT, padx=10)
 
     mostrar_turnos()
