@@ -34,13 +34,13 @@ class Menu(tk.Tk):
             button_frame.grid_columnconfigure(i, weight=1)
 
         # Botones con fuente más grande
-        tk.Button(button_frame, text="Turnos", font=("Calibri", 20), width=10, command=self.abrir_gestion_turnos).grid(row=0, column=0, padx=30, pady=10)
-        tk.Button(button_frame, text="Personas", font=("Calibri", 20), width=10, command=self.personas).grid(row=0, column=1, padx=30, pady=10)
-        tk.Button(button_frame, text="Stock", font=("Calibri", 20), width=10, command=self.stock).grid(row=0, column=2, padx=30, pady=10)
-        tk.Button(button_frame, text="Servicios", font=("Calibri", 20), width=10, command=self.servicios).grid(row=0, column=3, padx=30, pady=10)
+        tk.Button(button_frame, text="TURNOS", font=("Calibri", 20), width=10, command=self.abrir_gestion_turnos).grid(row=0, column=0, padx=30, pady=10)
+        tk.Button(button_frame, text="PERSONAS", font=("Calibri", 20), width=10, command=self.personas).grid(row=0, column=1, padx=30, pady=10)
+        tk.Button(button_frame, text="STOCK", font=("Calibri", 20), width=10, command=self.stock).grid(row=0, column=2, padx=30, pady=10)
+        tk.Button(button_frame, text="SERVICIOS", font=("Calibri", 20), width=10, command=self.servicios).grid(row=0, column=3, padx=30, pady=10)
 
         # Botón de Cerrar
-        tk.Button(button_frame, text="Cerrar", font=("Calibri", 20), width=10, command=self.cerrar).grid(row=0, column=4, padx=30, pady=10)
+        tk.Button(button_frame, text="CERRAR", font=("Calibri", 20), width=10, command=self.cerrar).grid(row=0, column=4, padx=30, pady=10)
 
     def cerrar(self):
         self.destroy()  # Cierra la aplicación

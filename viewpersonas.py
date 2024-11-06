@@ -30,7 +30,7 @@ class ViewPersonas(tk.Frame):
 
     def create_widgets(self):
         # Frame de búsqueda
-        search_frame = tk.LabelFrame(self, text="Buscar por DNI", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
+        search_frame = tk.LabelFrame(self, text="BUSCAR POR DNI", bg="#40E0D0", font=('Calibri', 20), borderwidth=5)
         search_frame.grid(row=0, column=0, padx=120, pady=20, sticky="ew")
 
         # Entrada de búsqueda
@@ -38,22 +38,22 @@ class ViewPersonas(tk.Frame):
         self.search_entry.grid(row=0, column=0, padx=10, pady=10)
 
         # Botones de acción
-        search_button = tk.Button(search_frame, text="Buscar", command=self.search_personas, bg="#ffffff", font=('Calibri', 15), width=8)
+        search_button = tk.Button(search_frame, text="BUSCAR", command=self.search_personas, bg="#ffffff", font=('Calibri', 15), width=10)
         search_button.grid(row=0, column=1, padx=10, pady=10)
         
-        search_button = tk.Button(search_frame, text="+ Agregar", command=self.abrir_altap, bg="#ffffff", font=('Calibri', 15), width=8)
+        search_button = tk.Button(search_frame, text="+ AGREGAR", command=self.abrir_altap, bg="#ffffff", font=('Calibri', 15), width=10)
         search_button.grid(row=0, column=2, padx=10, pady=10)
 
-        search_button = tk.Button(search_frame, text="Modificar", command=self.modificar_persona, bg="#ffffff", font=('Calibri', 15), width=8)
+        search_button = tk.Button(search_frame, text="MODIFICAR", command=self.modificar_persona, bg="#ffffff", font=('Calibri', 15), width=10)
         search_button.grid(row=0, column=3, padx=10, pady=10)
         
-        search_button = tk.Button(search_frame, text="Eliminar", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15), width=8)
+        search_button = tk.Button(search_frame, text="ELIMINAR", command=self.eliminar_persona, bg="#ffffff", font=('Calibri', 15), width=10)
         search_button.grid(row=0, column=4, padx=10, pady=10)
 
-        search_button = tk.Button(search_frame, text="Actualizar", command=self.actualizar_persona, bg="#ffffff", font=('Calibri', 15), width=8)
+        search_button = tk.Button(search_frame, text="ACTUALIZAR", command=self.actualizar_persona, bg="#ffffff", font=('Calibri', 15), width=10)
         search_button.grid(row=0, column=5, padx=10, pady=10)
 
-        back_button = tk.Button(self, text="Volver", command=self.volver_menu, bg="#ffffff", font=('Calibri', 15), width=8)
+        back_button = tk.Button(self, text="VOLVER", command=self.volver_menu, bg="#ffffff", font=('Calibri', 15), width=10)
         back_button.grid(row=2, column=0, padx=10, pady=10)
     
         
@@ -81,14 +81,14 @@ class ViewPersonas(tk.Frame):
         frame_treeview.grid_columnconfigure(0, weight=1)  # Permitir que la columna del Treeview se expanda
 
     # Configuración del Treeview
-        self.personas_treeview.heading("nombre", text="Nombre")
-        self.personas_treeview.heading("apellido", text="Apellido")
+        self.personas_treeview.heading("nombre", text="NOMBRE")
+        self.personas_treeview.heading("apellido", text="APELLIDO")
         self.personas_treeview.heading("dni", text="DNI")
-        self.personas_treeview.heading("contacto", text="Contacto")
-        self.personas_treeview.heading("correo", text="Correo")
-        self.personas_treeview.heading("tipo", text="Tipo")
-        self.personas_treeview.heading("activo", text="Activo")
-        self.personas_treeview.heading("id_tipo_p", text="Tipo ID")
+        self.personas_treeview.heading("contacto", text="CONTACTO")
+        self.personas_treeview.heading("correo", text="CORREO")
+        self.personas_treeview.heading("tipo", text="TIPO")
+        self.personas_treeview.heading("activo", text="ACTIVO")
+        self.personas_treeview.heading("id_tipo_p", text="TIPO ID")
 
     # Ancho de las columnas y datos centrados
         self.personas_treeview.column("nombre", anchor='center', width=150)
@@ -127,8 +127,7 @@ class ViewPersonas(tk.Frame):
 
       if not dni:  
         messagebox.showwarning("Advertencia", "Debe ingresar un DNI para buscar a una persona.")
-        return 
-
+        return 10
       if not dni.isdigit():
         messagebox.showwarning("Advertencia", "Debe ingresar un DNI válido.")
         return  
